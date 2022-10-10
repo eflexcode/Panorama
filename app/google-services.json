@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "343083260466",
+    "project_id": "panorama-15a58",
+    "storage_bucket": "panorama-15a58.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:343083260466:android:c9e6dd5e92356c524dba2b",
+        "android_client_info": {
+          "package_name": "com.larrex.panorama"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "343083260466-3mkdue0v84cp3hqdgbbb7fd9f7p4qkgq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRaw5yIgBUcWS_RrNxcv3OnVWaefeBSwU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "343083260466-3mkdue0v84cp3hqdgbbb7fd9f7p4qkgq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
