@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace 'com.larrex.panorama'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.larrex.panorama"
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -83,6 +83,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-permissions:0.26.2-beta"
     implementation "com.google.accompanist:accompanist-pager:0.26.3-beta"
     implementation 'androidx.navigation:navigation-runtime-ktx:2.5.2'
+    implementation 'com.google.android.gms:play-services-auth:20.3.0'
 
 
 }
