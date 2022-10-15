@@ -2,20 +2,16 @@ package com.larrex.panorama.ui.screens
 
 import android.app.Activity.RESULT_OK
 import android.app.Application
-import android.content.Intent
+import android.os.Handler
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -32,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -41,12 +38,15 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.larrex.panorama.R
+import com.larrex.panorama.core.Result
+import com.larrex.panorama.core.Status
 import com.larrex.panorama.ui.theme.Blue
 import com.larrex.panorama.ui.viewmodel.MainViewModel
 
+private const val TAG = "AuthScreen"
 
 @Composable
-fun AuthScreen(application: Application) {
+fun AuthScreen(application: Application, navHostController: NavHostController) {
 
     val colors = listOf<Color>(Color.White, Color.Black)
 
@@ -61,6 +61,12 @@ fun AuthScreen(application: Application) {
 
     val viewModel = hiltViewModel<MainViewModel>()
 
+    var loading by remember { mutableStateOf(false) }
+//
+//    var auth2: AuthCredential? = null
+//
+//    var auth by remember { mutableStateOf(auth2) }
+
     val startActivityResultLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -72,105 +78,128 @@ fun AuthScreen(application: Application) {
 
             val googleSignInAccount = task.getResult(ApiException::class.java)
 
-            val authCredential: AuthCredential =
-                GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
+           val auth = GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
+            loading = true
+            viewModel.doGoogleAuth(auth)
+        }
 
-            viewModel.doGoogleAuth(authCredential)
+    }
+
+//    val result by viewModel.doGoogleAuth(auth).collectAsState(initial = Result(Status.LOADING, ""))
+
+    val result  = Result(Status.LOADING,"")
+
+    val authState by viewModel.authState(result).collectAsState(initial = result)
+
+    LaunchedEffect(Unit) {
+
+        if (authState.status == Status.SUCCESS) {
+
+            navHostController.navigate("home")
 
         }
 
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(colors)),
-        contentAlignment = Alignment.BottomCenter
-    ) {
+    if (authState.status == Status.LOADING) {
 
-        Image(
-            painter = painterResource(id = R.drawable.login_background3),
-            contentDescription = null,
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Blue)
+        }
+
+    }
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .drawWithCache {
-
-                    val gradient = Brush.verticalGradient(colors)
-
-                    onDrawWithContent {
-                        drawContent()
-                        drawRect(gradient, blendMode = BlendMode.Multiply)
-                    }
-                },
-            alignment = Alignment.Center,
-            contentScale = ContentScale.Crop,
-
-            )
-
-        Column(
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(Brush.verticalGradient(colors)),
+            contentAlignment = Alignment.BottomCenter
         ) {
 
-            val quicksand = FontFamily(
-
-                Font(R.font.quicksand_regular, FontWeight.Normal),
-                Font(R.font.quicksand_medium, FontWeight.Medium),
-                Font(R.font.quicksand_bold, FontWeight.Bold)
-
-            )
-
-            Text(
-                text = "Panorama.", modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                fontSize = 30.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontFamily = quicksand
-
-            )
-
-            Text(
-                text = "Watch your favorite movies or series on only one platform. You can watch it anytime and anywhere.",
+            Image(
+                painter = painterResource(id = R.drawable.login_background3),
+                contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 40.dp, start = 40.dp, top = 20.dp),
-                textAlign = TextAlign.Center,
-                fontSize = 14.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Medium,
-                fontFamily = quicksand
+                    .fillMaxSize()
+                    .drawWithCache {
 
-            )
+                        val gradient = Brush.verticalGradient(colors)
 
-            Button(
-                onClick = {
+                        onDrawWithContent {
+                            drawContent()
+                            drawRect(gradient, blendMode = BlendMode.Multiply)
+                        }
+                    },
+                alignment = Alignment.Center,
+                contentScale = ContentScale.Crop,
 
-                    val intent = googleClient.signInIntent
+                )
 
-                    startActivityResultLauncher.launch(intent)
-
-                },
-                modifier = Modifier
-                    .padding(bottom = 70.dp, top = 30.dp, start = 30.dp, end = 30.dp)
-                    .fillMaxWidth()
-                    .height(60.dp),
-                colors = ButtonDefaults.buttonColors(Blue)
+            Column(
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_google),
-                    contentDescription = null,
-                    modifier = Modifier.padding(end = 10.dp),
-                    tint = Color.White
+                val quicksand = FontFamily(
+
+                    Font(R.font.quicksand_regular, FontWeight.Normal),
+                    Font(R.font.quicksand_medium, FontWeight.Medium),
+                    Font(R.font.quicksand_bold, FontWeight.Bold)
+
                 )
 
                 Text(
-                    text = "Sign in with Google",
+                    text = "Panorama.", modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 30.sp,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = quicksand,
-                    color = Color.White
+                    fontFamily = quicksand
+
                 )
+
+                Text(
+                    text = "Watch your favorite movies or series on only one platform. You can watch it anytime and anywhere.",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 40.dp, start = 40.dp, top = 20.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 14.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = quicksand
+
+                )
+
+                Button(
+                    onClick = {
+
+                        val intent = googleClient.signInIntent
+
+                        startActivityResultLauncher.launch(intent)
+
+                    },
+                    modifier = Modifier
+                        .padding(bottom = 70.dp, top = 30.dp, start = 30.dp, end = 30.dp)
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    colors = ButtonDefaults.buttonColors(Blue)
+                ) {
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_google),
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 10.dp),
+                        tint = Color.White
+                    )
+
+                    Text(
+                        text = "Sign in with Google",
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = quicksand,
+                        color = Color.White
+                    )
+
+                }
 
             }
 
@@ -178,4 +207,3 @@ fun AuthScreen(application: Application) {
 
     }
 
-}

@@ -11,8 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.larrex.panorama.ui.screens.AuthScreen
+import com.larrex.panorama.ui.screens.navigation.AuthNavigation
 import com.larrex.panorama.ui.theme.PanoramaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,19 +30,26 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
+                    val navHostController = rememberNavController()
                     val auth = FirebaseAuth.getInstance().currentUser
 
-                    if (auth != null){
-                        Greeting("Android")
-                    }else{
+                    AuthNavigation(
+                        navHostController = navHostController,
+                        application = application
+                    )
+
+//                    if (auth != null){
+//                       navHostController.navigate("home")
+//                    }else{
 
                         window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
 //                        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
 
-                        AuthScreen(application)
-                    }
+//                        AuthScreen(application, navHostController)
 
+                        navHostController.navigate("auth")
 
+//                    }
                 }
             }
         }

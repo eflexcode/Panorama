@@ -1,15 +1,21 @@
 package com.larrex.panorama.di.repository
 
+import android.app.Application
+import android.util.Log
+import androidx.navigation.NavHostController
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.larrex.panorama.Util
 import com.larrex.panorama.core.Status
+import com.larrex.panorama.core.Result
 import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.repository.Repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
@@ -17,59 +23,115 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class RepositoryImpl @Inject constructor() : Repository {
+private const val TAG = "RepositoryImpl"
 
-    override fun doGoogleAuth(authCredential: AuthCredential) = callbackFlow<Status> {
+class RepositoryImpl @Inject constructor(
+    private var application: Application,
+    private val auth: FirebaseAuth
+) : Repository {
 
-        trySend(Status.LOADING)
+    override fun isAuthenticated(result: Result): Flow<Result> {
+        return flow<Result> {
 
+            if (result.status != Status.NOTHING) {
+                Log.d(TAG, "isAuthenticated: ")
+                emit(result)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun doGoogleAuth(
+        authCredential: AuthCredential?,
+    ) {
+
+        Log.d(TAG, "doGoogleAuth: ")
+
+        print("fffffffffffff")
+
+
+//            trySend(Result(Status.LOADING, ""))
         val firebaseAuth = FirebaseAuth.getInstance()
 
-        firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(
-            OnCompleteListener { authResult ->
+        if (authCredential != null)
 
-                if (authResult.isSuccessful) {
+            firebaseAuth.signInWithCredential(authCredential)
+                .addOnCompleteListener(OnCompleteListener { authResult ->
 
-                    val newUser = authResult.result.additionalUserInfo?.isNewUser
+                    if (authResult.isSuccessful) {
 
-                    if (newUser == true) {
+                        val newUser = authResult.result.additionalUserInfo?.isNewUser
 
-                        trySend(Status.SUCCESS)
+                        if (newUser == true) {
 
-                    } else {
+                            val firebaseFirestore = FirebaseFirestore.getInstance()
 
-                        val firebaseFirestore = FirebaseFirestore.getInstance()
+                            val collectionReference =
+                                firebaseFirestore.collection(Util.USER_COLLECTION)
 
-                        val collectionReference = firebaseFirestore.collection(Util.USER_COLLECTION)
+                            val documentReference =
+                                collectionReference.document(firebaseAuth.uid!!)
 
-                        val documentReference = collectionReference.document(firebaseAuth.uid!!)
+                            val id: String = firebaseAuth.uid!!
+                            val name: String = authResult.result.user?.displayName!!
+                            val imageUrl: String = authResult.result.user?.photoUrl.toString()
 
-                        val id: String = firebaseAuth.uid!!
-                        val name: String = authResult.result.user?.displayName!!
-                        val imageUrl: String = authResult.result.user?.photoUrl.toString()
+                            val user = User(id, name, imageUrl)
 
-                        val user = User(id, name, imageUrl)
+                            documentReference.set(user).addOnSuccessListener {
 
-                        documentReference.set(user).addOnSuccessListener {
+                                isAuthenticated(Result(Status.SUCCESS, "SUCCESS"))
 
-                            trySend(Status.SUCCESS)
+//                                    trySend(Result(Status.SUCCESS, "SUCCESS"))
 
-                        }.addOnFailureListener {
+                            }.addOnFailureListener { error ->
 
-                            trySend(Status.FAILURE)
+                                error.message?.let {
+                                    Result(
+                                        Status.FAILURE,
+                                        it
+                                    )
+                                }?.let { isAuthenticated(it) }
+
+
+//                                    error.message?.let { Result(Status.FAILURE, it) }
+//                                        ?.let { trySend(it) }
+
+                            }
+
+                        } else {
+//                                trySend(Result(Status.SUCCESS, "SUCCESS"))
+
+                            isAuthenticated(Result(Status.SUCCESS, "SUCCESS"))
 
                         }
 
+                    } else {
+//                            trySend(Result(Status.FAILURE, "Something went wrong"))
+                        isAuthenticated(Result(Status.FAILURE, "Something went wrong"))
+
+
                     }
 
-                } else {
+                })
 
-                    trySend(Status.FAILURE)
+//            awaitClose { }
 
-                }
 
-            })
+//        }
 
     }
 
+
 }
+
+//    override fun doGoogleAuth(authCredential: AuthCredential): Flow<Status> {
+//
+//        return callbackFlow<Status> {
+//
+//            trySend()
+//            Log.d(TAG, "doGoogleAuth: ")
+//
+//        }.flowOn(Dispatchers.IO)
+//
+//    }
+
