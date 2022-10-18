@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -42,6 +43,10 @@ import com.larrex.panorama.core.Result
 import com.larrex.panorama.core.Status
 import com.larrex.panorama.ui.theme.Blue
 import com.larrex.panorama.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 private const val TAG = "AuthScreen"
 
@@ -61,7 +66,8 @@ fun AuthScreen(application: Application, navHostController: NavHostController) {
 
     val viewModel = hiltViewModel<MainViewModel>()
 
-    var loading by remember { mutableStateOf(false) }
+    var status by remember { mutableStateOf(Status.NOTHING) }
+    var errorMessage by remember { mutableStateOf("") }
 //
 //    var auth2: AuthCredential? = null
 //
@@ -78,126 +84,17 @@ fun AuthScreen(application: Application, navHostController: NavHostController) {
 
             val googleSignInAccount = task.getResult(ApiException::class.java)
 
-           val auth = GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
-            loading = true
-            viewModel.doGoogleAuth(auth)
-        }
+            val auth = GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
 
-    }
 
-//    val result by viewModel.doGoogleAuth(auth).collectAsState(initial = Result(Status.LOADING, ""))
 
-    val result  = Result(Status.LOADING,"")
+            CoroutineScope(Dispatchers.IO).launch {
 
-    val authState by viewModel.authState(result).collectAsState(initial = result)
+                viewModel.doGoogleAuth(auth).collectLatest { result: Result ->
 
-    LaunchedEffect(Unit) {
-
-        if (authState.status == Status.SUCCESS) {
-
-            navHostController.navigate("home")
-
-        }
-
-    }
-
-    if (authState.status == Status.LOADING) {
-
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Blue)
-        }
-
-    }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Brush.verticalGradient(colors)),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.login_background3),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .drawWithCache {
-
-                        val gradient = Brush.verticalGradient(colors)
-
-                        onDrawWithContent {
-                            drawContent()
-                            drawRect(gradient, blendMode = BlendMode.Multiply)
-                        }
-                    },
-                alignment = Alignment.Center,
-                contentScale = ContentScale.Crop,
-
-                )
-
-            Column(
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                val quicksand = FontFamily(
-
-                    Font(R.font.quicksand_regular, FontWeight.Normal),
-                    Font(R.font.quicksand_medium, FontWeight.Medium),
-                    Font(R.font.quicksand_bold, FontWeight.Bold)
-
-                )
-
-                Text(
-                    text = "Panorama.", modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    fontSize = 30.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = quicksand
-
-                )
-
-                Text(
-                    text = "Watch your favorite movies or series on only one platform. You can watch it anytime and anywhere.",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 40.dp, start = 40.dp, top = 20.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 14.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = quicksand
-
-                )
-
-                Button(
-                    onClick = {
-
-                        val intent = googleClient.signInIntent
-
-                        startActivityResultLauncher.launch(intent)
-
-                    },
-                    modifier = Modifier
-                        .padding(bottom = 70.dp, top = 30.dp, start = 30.dp, end = 30.dp)
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    colors = ButtonDefaults.buttonColors(Blue)
-                ) {
-
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_google),
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 10.dp),
-                        tint = Color.White
-                    )
-
-                    Text(
-                        text = "Sign in with Google",
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = quicksand,
-                        color = Color.White
-                    )
+                    status = result.status
+                    errorMessage = result.message.toString()
+                    Log.d(TAG, "AuthScreen: " + result.status)
 
                 }
 
@@ -207,3 +104,125 @@ fun AuthScreen(application: Application, navHostController: NavHostController) {
 
     }
 
+//    val result by viewModel.doGoogleAuth(auth).collectAsState(initial = Result(Status.LOADING, ""))
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Brush.verticalGradient(colors)),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+
+        Image(
+            painter = painterResource(id = R.drawable.login_background3),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+                .drawWithCache {
+
+                    val gradient = Brush.verticalGradient(colors)
+
+                    onDrawWithContent {
+                        drawContent()
+                        drawRect(gradient, blendMode = BlendMode.Multiply)
+                    }
+
+                },
+            alignment = Alignment.Center,
+            contentScale = ContentScale.Crop,
+
+            )
+
+        Column(
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            val quicksand = FontFamily(
+
+                Font(R.font.quicksand_regular, FontWeight.Normal),
+                Font(R.font.quicksand_medium, FontWeight.Medium),
+                Font(R.font.quicksand_bold, FontWeight.Bold)
+
+            )
+
+            Text(
+                text = "Panorama.", modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontSize = 30.sp,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontFamily = quicksand
+
+            )
+
+            Text(
+                text = "Watch your favorite movies or series on only one platform. You can watch it anytime and anywhere.",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 40.dp, start = 40.dp, top = 20.dp),
+                textAlign = TextAlign.Center,
+                fontSize = 14.sp,
+                color = Color.White,
+                fontWeight = FontWeight.Medium,
+                fontFamily = quicksand
+
+            )
+
+            Button(
+                onClick = {
+
+                    val intent = googleClient.signInIntent
+
+                    startActivityResultLauncher.launch(intent)
+
+                },
+                modifier = Modifier
+                    .padding(bottom = 70.dp, top = 30.dp, start = 30.dp, end = 30.dp)
+                    .fillMaxWidth()
+                    .height(60.dp),
+                colors = ButtonDefaults.buttonColors(Blue)
+            ) {
+
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_google),
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 10.dp),
+                    tint = Color.White
+                )
+
+                Text(
+                    text = "Sign in with Google",
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = quicksand,
+                    color = Color.White
+                )
+
+            }
+
+        }
+
+    }
+
+    if (status == Status.LOADING) {
+
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Blue)
+        }
+
+    }
+
+    if (status == Status.SUCCESS) {
+
+        Log.d(TAG, "AuthScreen: LaunchedEffect")
+
+        status = Status.NOTHING
+        navHostController.navigate("home"){
+            popUpTo(0) {
+            }
+        }
+
+    }
+
+}

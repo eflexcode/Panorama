@@ -70,6 +70,10 @@ fun PanoramaTheme(
         content = content
     )
 
-
+//    if (darkTheme){
+//        uiControl.setSystemBarsColor(Color.Black)
+//    }else{
+//        uiControl.setSystemBarsColor(Color.White)
+//    }
 
 }

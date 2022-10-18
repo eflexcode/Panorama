@@ -38,18 +38,27 @@ class MainActivity : ComponentActivity() {
                         application = application
                     )
 
-//                    if (auth != null){
-//                       navHostController.navigate("home")
-//                    }else{
+                    if (auth == null) {
 
-                        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-//                        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+                        window.setFlags(
+                            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                        )
 
-//                        AuthScreen(application, navHostController)
+                        navHostController.navigate("auth") {
+                            popUpTo("auth") {
+                                inclusive = true
+                            }
+                        }
 
-                        navHostController.navigate("auth")
+                    } else {
 
-//                    }
+                        navHostController.navigate("home") {
+                            popUpTo(0) {
+                            }
+                        }
+
+                    }
                 }
             }
         }

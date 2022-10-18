@@ -11,13 +11,13 @@ import com.larrex.panorama.ui.screens.MainScreen
 @Composable
 fun AuthNavigation(navHostController: NavHostController, application: Application) {
 
-
     NavHost(navController = navHostController, startDestination = "auth") {
 
         composable("auth") {
             AuthScreen(application = application, navHostController)
         }
         composable("home") {
+
             MainScreen()
         }
 

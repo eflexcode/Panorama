@@ -9,23 +9,24 @@ import com.larrex.panorama.domain.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val TAG = "MainViewModel"
 
 @HiltViewModel
 class MainViewModel @Inject constructor(private var repository: Repository) : ViewModel() {
 
-    fun doGoogleAuth(authCredential: AuthCredential?)  {
+    suspend fun doGoogleAuth(authCredential: AuthCredential?) : Flow<Result> {
 
         Log.d(TAG, "doGoogleAuth: ")
 
-         repository.doGoogleAuth(authCredential)
+       return  repository.doGoogleAuth(authCredential)
 
     }
 
-    fun authState(result: Result) : Flow<Result> {
+    fun authState() : Flow<Boolean> {
 
-        return repository.isAuthenticated(result)
+        return repository.isAuthenticated()
     }
 
 }

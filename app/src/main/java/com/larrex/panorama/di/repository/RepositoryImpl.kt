@@ -30,108 +30,82 @@ class RepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth
 ) : Repository {
 
-    override fun isAuthenticated(result: Result): Flow<Result> {
-        return flow<Result> {
+    override fun isAuthenticated(): Flow<Boolean> {
 
-            if (result.status != Status.NOTHING) {
-                Log.d(TAG, "isAuthenticated: ")
-                emit(result)
+        return flow<Boolean> {
+
+
+            if (auth.currentUser != null) {
+                emit(true)
+                Log.d(TAG, "isAuthenticated: yes")
+            } else {
+                emit(false)
+                Log.d(TAG, "isAuthenticated: no")
             }
+
         }.flowOn(Dispatchers.IO)
+
     }
 
-    override fun doGoogleAuth(
+    override suspend fun doGoogleAuth(
         authCredential: AuthCredential?,
-    ) {
+    ): Flow<Result> {
 
         Log.d(TAG, "doGoogleAuth: ")
 
         print("fffffffffffff")
 
+        return callbackFlow<Result> {
 
-//            trySend(Result(Status.LOADING, ""))
-        val firebaseAuth = FirebaseAuth.getInstance()
+            trySend(Result(Status.LOADING, ""))
 
-        if (authCredential != null)
+            val firebaseAuth = FirebaseAuth.getInstance()
 
-            firebaseAuth.signInWithCredential(authCredential)
-                .addOnCompleteListener(OnCompleteListener { authResult ->
+            if (authCredential != null)
 
-                    if (authResult.isSuccessful) {
+                firebaseAuth.signInWithCredential(authCredential)
+                    .addOnCompleteListener(OnCompleteListener { authResult ->
 
-                        val newUser = authResult.result.additionalUserInfo?.isNewUser
+                        if (authResult.isSuccessful) {
 
-                        if (newUser == true) {
+                            val newUser = authResult.result.additionalUserInfo?.isNewUser
 
-                            val firebaseFirestore = FirebaseFirestore.getInstance()
+                            if (newUser == true) {
 
-                            val collectionReference =
-                                firebaseFirestore.collection(Util.USER_COLLECTION)
+                                val firebaseFirestore = FirebaseFirestore.getInstance()
 
-                            val documentReference =
-                                collectionReference.document(firebaseAuth.uid!!)
+                                val collectionReference =
+                                    firebaseFirestore.collection(Util.USER_COLLECTION)
 
-                            val id: String = firebaseAuth.uid!!
-                            val name: String = authResult.result.user?.displayName!!
-                            val imageUrl: String = authResult.result.user?.photoUrl.toString()
+                                val documentReference =
+                                    collectionReference.document(firebaseAuth.uid!!)
 
-                            val user = User(id, name, imageUrl)
+                                val id: String = firebaseAuth.uid!!
+                                val name: String = authResult.result.user?.displayName!!
+                                val imageUrl: String = authResult.result.user?.photoUrl.toString()
 
-                            documentReference.set(user).addOnSuccessListener {
+                                val user = User(id, name, imageUrl)
 
-                                isAuthenticated(Result(Status.SUCCESS, "SUCCESS"))
+                                documentReference.set(user).addOnSuccessListener {
+                                    trySend(Result(Status.SUCCESS, ""))
+                                }.addOnFailureListener { error ->
+                                    trySend(Result(Status.FAILURE, error.message))
+                                }
 
-//                                    trySend(Result(Status.SUCCESS, "SUCCESS"))
-
-                            }.addOnFailureListener { error ->
-
-                                error.message?.let {
-                                    Result(
-                                        Status.FAILURE,
-                                        it
-                                    )
-                                }?.let { isAuthenticated(it) }
-
-
-//                                    error.message?.let { Result(Status.FAILURE, it) }
-//                                        ?.let { trySend(it) }
-
+                            } else {
+                                trySend(Result(Status.SUCCESS, ""))
                             }
 
                         } else {
-//                                trySend(Result(Status.SUCCESS, "SUCCESS"))
-
-                            isAuthenticated(Result(Status.SUCCESS, "SUCCESS"))
-
+                            trySend(Result(Status.FAILURE, "Something went wrong"))
                         }
 
-                    } else {
-//                            trySend(Result(Status.FAILURE, "Something went wrong"))
-                        isAuthenticated(Result(Status.FAILURE, "Something went wrong"))
+                    })
 
+            awaitClose { }
 
-                    }
-
-                })
-
-//            awaitClose { }
-
-
-//        }
-
+        }.flowOn(Dispatchers.IO)
     }
 
 
 }
-
-//    override fun doGoogleAuth(authCredential: AuthCredential): Flow<Status> {
-//
-//        return callbackFlow<Status> {
-//
-//            trySend()
-//            Log.d(TAG, "doGoogleAuth: ")
-//
-//        }.flowOn(Dispatchers.IO)
-//
-//    }
-

@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface Repository {
 
-    fun isAuthenticated(result: Result): Flow<Result>
+    fun isAuthenticated(): Flow<Boolean>
 
-    fun doGoogleAuth(authCredential: AuthCredential?)
+ suspend fun doGoogleAuth(authCredential: AuthCredential?) : Flow<Result>
 
 }
