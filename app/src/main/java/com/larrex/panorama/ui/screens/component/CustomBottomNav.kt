@@ -1,5 +1,6 @@
 package com.larrex.panorama.ui.screens.component
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,20 +19,26 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.rememberAsyncImagePainter
 import com.larrex.panorama.R
 import com.larrex.panorama.ui.screens.navigation.NavScreens
+import com.larrex.panorama.ui.viewmodel.MainViewModel
+
+private const val TAG = "CustomBottomNav"
 
 @Composable
 fun CustomBottomNav(
-    profileUrl: String,
     navController: NavController,
     onClick: (route: String) -> Unit
 ) {
 
+    val viewModel = hiltViewModel<MainViewModel>()
+
+    val user by viewModel.getUserDetails().collectAsState(initial = null)
 
     val navItem = listOf(
         NavScreens.Movies.route,
@@ -57,12 +64,6 @@ fun CustomBottomNav(
         4,
     )
 
-    val painter = rememberAsyncImagePainter(
-        model = profileUrl,
-        placeholder = painterResource(id = R.drawable.gray),
-        error = painterResource(id = R.drawable.gray)
-    )
-
     Surface(shadowElevation = 10.dp) {
 
         Row(
@@ -83,6 +84,12 @@ fun CustomBottomNav(
 
                 if (item == NavScreens.Profile.route) {
 
+                    val painter = rememberAsyncImagePainter(
+                        model = user?.imageUrl,
+                        placeholder = painterResource(id = R.drawable.gray),
+                        error = painterResource(id = R.drawable.gray)
+                    )
+                    Log.d(TAG, "CustomBottomNav: ${user?.imageUrl}")
                     Image(
                         painter = painter,
                         contentDescription = null,
@@ -94,8 +101,8 @@ fun CustomBottomNav(
                                 enabled = true,
                                 role = null,
                                 onValueChange = {
-                                    onClick(item)
 
+                                    onClick(item)
 
                                 }), contentScale = ContentScale.Crop,
                         alignment = Alignment.Center

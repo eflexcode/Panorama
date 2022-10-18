@@ -39,6 +39,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.larrex.panorama.R
+import com.larrex.panorama.Util
 import com.larrex.panorama.core.Result
 import com.larrex.panorama.core.Status
 import com.larrex.panorama.ui.theme.Blue
@@ -139,13 +140,7 @@ fun AuthScreen(application: Application, navHostController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            val quicksand = FontFamily(
 
-                Font(R.font.quicksand_regular, FontWeight.Normal),
-                Font(R.font.quicksand_medium, FontWeight.Medium),
-                Font(R.font.quicksand_bold, FontWeight.Bold)
-
-            )
 
             Text(
                 text = "Panorama.", modifier = Modifier.fillMaxWidth(),
@@ -153,7 +148,7 @@ fun AuthScreen(application: Application, navHostController: NavHostController) {
                 fontSize = 30.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                fontFamily = quicksand
+                fontFamily = Util.quicksand
 
             )
 
@@ -166,7 +161,7 @@ fun AuthScreen(application: Application, navHostController: NavHostController) {
                 fontSize = 14.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Medium,
-                fontFamily = quicksand
+                fontFamily = Util.quicksand
 
             )
 
@@ -195,7 +190,7 @@ fun AuthScreen(application: Application, navHostController: NavHostController) {
                 Text(
                     text = "Sign in with Google",
                     fontWeight = FontWeight.Bold,
-                    fontFamily = quicksand,
+                    fontFamily = Util.quicksand,
                     color = Color.White
                 )
 

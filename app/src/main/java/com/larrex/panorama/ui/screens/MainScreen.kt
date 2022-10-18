@@ -49,7 +49,6 @@ fun MainScreen() {
 
         Scaffold(bottomBar = {
             CustomBottomNav(
-                profileUrl = "https://images.unsplash.com/photo-1665931500523-98ae696c47f5?ixlib=rb-1.2.1&dl=ben-iwara-51POCfBkaW4-unsplash.jpg&q=80&fm=jpg&crop=entropy&cs=tinysrgb",
                 navController
             ) {
 

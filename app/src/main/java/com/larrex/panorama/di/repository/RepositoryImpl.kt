@@ -6,12 +6,16 @@ import androidx.navigation.NavHostController
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import com.larrex.panorama.Util
 import com.larrex.panorama.core.Status
 import com.larrex.panorama.core.Result
 import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.repository.Repository
+import com.larrex.panorama.domain.retrofit.ApiClient
+import com.larrex.panorama.domain.retrofit.model.Trending
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -27,7 +31,9 @@ private const val TAG = "RepositoryImpl"
 
 class RepositoryImpl @Inject constructor(
     private var application: Application,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore,
+    private val apiClient: ApiClient
 ) : Repository {
 
     override fun isAuthenticated(): Flow<Boolean> {
@@ -105,6 +111,44 @@ class RepositoryImpl @Inject constructor(
             awaitClose { }
 
         }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getUserDetails(): Flow<User?> {
+
+
+        return callbackFlow<User?> {
+
+            auth.currentUser?.uid?.let {
+                firestore.collection(Util.USER_COLLECTION).document(it).addSnapshotListener(
+                    EventListener { value, error ->
+
+                        val user: User? = value?.toObject(User::class.java)
+                        Log.d(TAG, "getUserDetails: ${user?.imageUrl}")
+                        trySend(user)
+
+                    })
+            }
+
+            awaitClose { }
+
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getTrending(): Flow<Trending?> {
+
+        return flow<Trending?> {
+
+            val trending = apiClient.getTrending().execute()
+
+            if (trending.isSuccessful) {
+
+                emit(trending.body())
+
+            }
+
+
+        }.flowOn(Dispatchers.IO)
+
     }
 
 
