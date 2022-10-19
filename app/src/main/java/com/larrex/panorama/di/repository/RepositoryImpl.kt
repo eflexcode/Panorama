@@ -15,6 +15,7 @@ import com.larrex.panorama.core.Result
 import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.repository.Repository
 import com.larrex.panorama.domain.retrofit.ApiClient
+import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Trending
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -149,6 +150,21 @@ class RepositoryImpl @Inject constructor(
 
         }.flowOn(Dispatchers.IO)
 
+    }
+
+    override fun getCategory(): Flow<Category?> {
+        return flow<Category?> {
+
+            val category = apiClient.getCategory().execute()
+
+            if (category.isSuccessful) {
+
+                emit(category.body())
+
+            }
+
+
+        }.flowOn(Dispatchers.IO)
     }
 
 

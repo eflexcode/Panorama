@@ -3,7 +3,6 @@ package com.larrex.panorama.ui.screens.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,7 +13,6 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,47 +20,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.lerp
 import coil.compose.rememberAsyncImagePainter
-import com.google.accompanist.pager.calculateCurrentOffsetForPage
-import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.larrex.panorama.R
 import com.larrex.panorama.Util
-import kotlin.math.absoluteValue
 
 @Composable
-fun TrendingItem(imageUrl: String, name: String, onClick: () -> Unit) {
+fun MovieItem(tv: Boolean, imageUrl: String, onClick: () -> Unit) {
 
     val painter = rememberAsyncImagePainter(
         model = imageUrl,
         placeholder = painterResource(id = R.drawable.gray),
         error = painterResource(id = R.drawable.gray)
     )
-    val colors = listOf<Color>(Color.White, Color.Black)
 
-    Box(
-        modifier = Modifier
-            .padding(start = 3.dp, end = 3.dp, top = 3.dp)
-            .width(385.dp)
-            .height(230.dp), contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = Modifier) {
 
         Image(
             painter = painter,
             contentDescription = null,
             modifier = Modifier
-                .fillMaxSize()
+                .width(180.dp)
+                .height(230.dp)
+                .padding(start = 3.dp, end = 3.dp, top = 3.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .drawWithCache {
-
-                    val gradient = Brush.verticalGradient(colors)
-
-                    onDrawWithContent {
-                        drawContent()
-                        drawRect(gradient, blendMode = BlendMode.Multiply)
-                    }
-
-                }
                 .toggleable(
                     value = true,
                     enabled = true,
@@ -71,33 +51,19 @@ fun TrendingItem(imageUrl: String, name: String, onClick: () -> Unit) {
 
                         onClick()
 
-                    }),
-            contentScale = ContentScale.Crop,
-            alignment = Alignment.Center,
-        )
-
-        Text(
-            text = name, modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 10.dp, end = 10.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontFamily = Util.quicksand,
-            maxLines = 2
-
+                    }), contentScale = ContentScale.Crop,
+            alignment = Alignment.Center
         )
 
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = false)
 @Composable
-fun TrendingPreview() {
+fun MoviesPre() {
 
-//    TrendingItem("https://image.tmdb.org/t/p/w780/bQXAqRx2Fgc46uCVWgoPz5L5Dtr.jpg", "") {
+    MovieItem(tv = false, imageUrl = "") {
 
-//    }
+    }
 
 }

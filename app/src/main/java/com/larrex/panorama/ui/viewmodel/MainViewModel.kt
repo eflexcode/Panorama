@@ -7,6 +7,7 @@ import com.google.firebase.auth.AuthCredential
 import com.larrex.panorama.core.Result
 import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.repository.Repository
+import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Trending
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -40,6 +41,11 @@ class MainViewModel @Inject constructor(private var repository: Repository) : Vi
     fun getTrending(): Flow<Trending?> {
 
         return repository.getTrending()
+
+    }
+    fun getCategory(): Flow<Category?> {
+
+        return repository.getCategory()
 
     }
 
