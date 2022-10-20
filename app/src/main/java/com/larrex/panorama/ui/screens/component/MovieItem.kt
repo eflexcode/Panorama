@@ -39,8 +39,8 @@ fun MovieItem(tv: Boolean, imageUrl: String, onClick: () -> Unit) {
             painter = painter,
             contentDescription = null,
             modifier = Modifier
-                .width(180.dp)
-                .height(230.dp)
+                .width(140.dp)
+                .height(200.dp)
                 .padding(start = 3.dp, end = 3.dp, top = 3.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .toggleable(

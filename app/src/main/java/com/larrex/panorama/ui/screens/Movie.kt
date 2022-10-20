@@ -75,59 +75,6 @@ fun Movies() {
 
             item {
 
-//                Row(
-//                    modifier = Modifier
-//                        .padding(start = 15.dp, top = 10.dp)
-//                        .fillMaxWidth(), horizontalArrangement = Arrangement.Start,
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//
-//                    Image(
-//                        painter = painter,
-//                        contentDescription = null,
-//                        modifier = Modifier
-//                            .size(50.dp)
-//                            .clip(CircleShape)
-//                            .toggleable(
-//                                value = true,
-//                                enabled = true,
-//                                role = null,
-//                                onValueChange = {
-//
-//                                }), contentScale = ContentScale.Crop,
-//                        alignment = Alignment.Center
-//                    )
-//
-//
-//                Column(modifier = Modifier.padding(start = 10.dp)) {
-//
-//                    Text(
-//                        text = Util.getGreeting(),
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//                        textAlign = TextAlign.Start,
-//                        fontSize = 15.sp,
-//                        color = Color.Black,
-//                        fontWeight = FontWeight.Medium,
-//                        fontFamily = Util.quicksand
-//                    )
-//
-//                    Text(
-//                        text = user?.name.toString(), modifier = Modifier.fillMaxWidth(),
-//                        textAlign = TextAlign.Start,
-//                        fontSize = 18.sp,
-//                        color = Color.Black,
-//
-//                        fontWeight = FontWeight.Bold,
-//                        fontFamily = Util.quicksand
-//
-//                    )
-//                }
-//
-//
-//
-//            }
-
                 Column() {
 
                     Text(
