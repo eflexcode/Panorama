@@ -73,7 +73,7 @@ fun PanoramaTheme(
 //    if (darkTheme){
 //        uiControl.setSystemBarsColor(Color.Black)
 //    }else{
-//        uiControl.setSystemBarsColor(Color.White)
+//        uiControl.setSystemBarsColor(Color.Black)
 //    }
 
 }

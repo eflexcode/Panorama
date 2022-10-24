@@ -1,5 +1,6 @@
 package com.larrex.panorama.ui.screens.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -21,15 +22,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.larrex.panorama.Util
 import com.larrex.panorama.R
+import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.ui.viewmodel.MainViewModel
 
 @Composable
-fun CategoryItem(categoryName: String, id: Int) {
+fun CategoryItem(categoryName: String, movies: Movies?) {
     val viewModel = hiltViewModel<MainViewModel>()
 
-    val movies by viewModel.getMoviesWithGenres(id.toString()).collectAsState(initial = null)
-
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = Modifier.fillMaxWidth().background(Color.Black).padding(bottom = 5.dp, top = 5.dp)) {
 
         Column() {
 
@@ -44,8 +44,8 @@ fun CategoryItem(categoryName: String, id: Int) {
                         .weight(2f)
                         .padding(start = 15.dp, end = 10.dp),
                     textAlign = TextAlign.Start,
-                    fontSize = 19.sp,
-                    color = Color.Black,
+                    fontSize = 17.sp,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontFamily = Util.quicksand,
                     maxLines = 2,
@@ -56,14 +56,15 @@ fun CategoryItem(categoryName: String, id: Int) {
 
                     Icon(
                         painter = painterResource(id = R.drawable.ic_more),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = Color.White
                     )
 
                 }
 
             }
 
-            LazyRow(contentPadding =  PaddingValues(start = 15.dp,end = 15.dp)) {
+            LazyRow(contentPadding =  PaddingValues(start = 15.dp,end = 30.dp)) {
 
                 movies?.let {
                     items(it.results){
@@ -89,5 +90,5 @@ fun CategoryItem(categoryName: String, id: Int) {
 @Preview(showBackground = true)
 @Composable
 fun CategoryItemPreview() {
-    CategoryItem("", 0)
+//    CategoryItem("", 0)
 }

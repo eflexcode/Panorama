@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -26,6 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.rememberAsyncImagePainter
 import com.larrex.panorama.R
 import com.larrex.panorama.ui.screens.navigation.NavScreens
+import com.larrex.panorama.ui.theme.NavColor
 import com.larrex.panorama.ui.viewmodel.MainViewModel
 
 private const val TAG = "CustomBottomNav"
@@ -64,13 +66,12 @@ fun CustomBottomNav(
         4,
     )
 
-    Surface(shadowElevation = 10.dp) {
+    Surface(shadowElevation = 10.dp, color = Color.Black.copy(alpha = 0.6f)) {
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
-                .background(Color.White),
+                .height(50.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ) {
@@ -89,7 +90,9 @@ fun CustomBottomNav(
                         placeholder = painterResource(id = R.drawable.gray),
                         error = painterResource(id = R.drawable.gray)
                     )
+
                     Log.d(TAG, "CustomBottomNav: ${user?.imageUrl}")
+
                     Image(
                         painter = painter,
                         contentDescription = null,
@@ -117,7 +120,8 @@ fun CustomBottomNav(
 
                         Icon(
                             painter = painterResource(id = if (selected) navIconsSelected[index] else navIcons[index]),
-                            contentDescription = "navIcon"
+                            contentDescription = "navIcon",
+                            tint = if (selected) Color.White else Color.Gray
                         )
 
                     }

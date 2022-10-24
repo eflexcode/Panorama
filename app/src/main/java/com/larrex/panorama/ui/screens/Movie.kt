@@ -1,6 +1,7 @@
 package com.larrex.panorama.ui.screens
 
 import android.util.Log
+import android.view.WindowManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +37,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 import com.larrex.panorama.R
 import com.larrex.panorama.Util
@@ -65,39 +68,42 @@ fun Movies() {
     val state = rememberLazyListState()
     val behavior = rememberSnapperFlingBehavior(state)
 
+
+    val uiControl = rememberSystemUiController()
+
+    uiControl.setSystemBarsColor(Color.Black)
+
     Box(
         modifier = Modifier
-            .background(Color.White)
+            .background(Color.Black)
             .fillMaxSize()
     ) {
-
         LazyColumn() {
 
             item {
 
-                Column() {
 
-                    Text(
-                        text = "Panorama.", modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp),
-                        textAlign = TextAlign.Center,
-                        fontSize = 30.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = Util.quicksand
+                LazyRow(modifier = Modifier, state, flingBehavior = behavior) {
 
-                    )
+                    if (trending != null) {
 
-                    LazyRow(modifier = Modifier.padding(top = 20.dp),state, flingBehavior = behavior) {
+                        items(trending!!.results) {
 
-                        if (trending != null) {
-
-                            items(trending!!.results) {
-
-                                it.title?.let { it1 ->
+                            it.title?.let { it1 ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(0.dp)
+                                        .background(
+                                            Color.Yellow,
+                                            RoundedCornerShape(
+                                                bottomStart = 20.dp,
+                                                bottomEnd = 20.dp
+                                            )
+                                        )
+                                ) {
                                     TrendingItem(
-                                        imageUrl = "https://image.tmdb.org/t/p/w780" + it.backdropPath,
+                                        imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
                                         it1
                                     ) {
 
@@ -106,64 +112,21 @@ fun Movies() {
                                 }
                             }
                         }
-
                     }
-
-//                    trending?.results?.let {
-//                        HorizontalPager(5) { page ->
-//
-//                            trending!!.results[page].title?.let { it1 ->
-//                                TrendingItem(
-//                                    Modifier
-//                                        .graphicsLayer {
-//
-//                                            val pageOffset =
-//                                                calculateCurrentOffsetForPage(page).absoluteValue
-//
-//                                            // We animate the scaleX + scaleY, between 85% and 100%
-//                                            lerp(
-//                                                start = 0.90f,
-//                                                stop = 1f,
-//                                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
-//                                            ).also { scale ->
-//                                                scaleX = scale
-//                                                scaleY = scale
-//                                            }
-//
-//                                            // We animate the alpha, between 50% and 100%
-//                                            alpha = lerp(
-//                                                start = 0.5f,
-//                                                stop = 1f,
-//                                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
-//                                            )
-//                                        },
-//                                    imageUrl = "https://image.tmdb.org/t/p/w780" + trending!!.results[page].backdropPath,
-//                                    it1
-//                                ) {
-//
-//                                }
-//                            }
-//
-//
-//                        }
-//                    }
-
-
                 }
-
             }
 
             category?.let {
-                items(it.genres){
-
-                    it.name?.let { it1 -> it.id?.let { it2 -> CategoryItem(it1, it2) } }
+                items(it.genres) {
+                    val movies by viewModel.getMoviesWithGenres(it.id.toString())
+                        .collectAsState(initial = null)
+                    it.name?.let { it1 -> it.id?.let { it2 -> CategoryItem(it1, movies) } }
 
                 }
             }
-
         }
-    }
 
+    }
 }
 
 

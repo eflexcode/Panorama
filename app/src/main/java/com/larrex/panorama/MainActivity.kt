@@ -10,18 +10,25 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.FirebaseAuth
 import com.larrex.panorama.ui.screens.AuthScreen
 import com.larrex.panorama.ui.screens.navigation.AuthNavigation
 import com.larrex.panorama.ui.theme.PanoramaTheme
+import com.larrex.panorama.ui.theme.Typography
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        window.setFlags(
+//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+//        )
         setContent {
             PanoramaTheme {
                 // A surface container using the 'background' color from the theme
@@ -39,11 +46,6 @@ class MainActivity : ComponentActivity() {
                     )
 
                     if (auth == null) {
-
-                        window.setFlags(
-                            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                        )
 
                         navHostController.navigate("auth") {
                             popUpTo("auth") {
