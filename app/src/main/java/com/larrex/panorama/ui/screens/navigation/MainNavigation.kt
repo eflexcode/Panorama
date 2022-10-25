@@ -1,32 +1,38 @@
 package com.larrex.panorama.ui.screens.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.larrex.panorama.ui.screens.*
 
 @Composable
 fun BottomNavGraph(navHostController: NavHostController) {
 
+    val uiControl = rememberSystemUiController()
+
+    uiControl.setSystemBarsColor(Color.Black)
+
     NavHost(navController = navHostController, startDestination = NavScreens.Movies.route) {
 
-      composable(NavScreens.Movies.route){
-        Movies()
-      }
-      composable(NavScreens.TvShows.route){
-        TvShows()
-      }
-      composable(NavScreens.Search.route){
-        Search()
-      }
-      composable(NavScreens.Favorite.route){
-       Favorite()
-      }
-      composable(NavScreens.Profile.route){
-        Profile()
-      }
+        composable(NavScreens.Movies.route) {
+            Movies()
+        }
+        composable(NavScreens.TvShows.route) {
+            TvShows()
+        }
+        composable(NavScreens.Search.route) {
+            Search()
+        }
+        composable(NavScreens.Favorite.route) {
+            Favorite()
+        }
+        composable(NavScreens.Profile.route) {
+            Profile()
+        }
 
     }
 

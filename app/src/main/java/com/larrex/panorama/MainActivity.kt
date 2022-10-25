@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
 //            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
 //            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 //        )
+
         setContent {
             PanoramaTheme {
                 // A surface container using the 'background' color from the theme
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
 
                     val navHostController = rememberNavController()
                     val auth = FirebaseAuth.getInstance().currentUser

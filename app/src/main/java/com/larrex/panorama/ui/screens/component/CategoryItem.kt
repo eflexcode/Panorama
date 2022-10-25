@@ -8,8 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,13 +22,38 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.larrex.panorama.Util
 import com.larrex.panorama.R
 import com.larrex.panorama.domain.retrofit.model.Movies
+import com.larrex.panorama.domain.retrofit.model.Results
 import com.larrex.panorama.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun CategoryItem(categoryName: String, movies: Movies?) {
+
     val viewModel = hiltViewModel<MainViewModel>()
 
-    Box(modifier = Modifier.fillMaxWidth().background(Color.Black).padding(bottom = 5.dp, top = 5.dp)) {
+
+//    CoroutineScope(Dispatchers.IO).launch {
+//
+//    }
+
+//    val movies by viewModel.getMoviesWithGenres(id).collectAsState(initial = null)
+//    var movies : Movies? = null
+
+    LaunchedEffect(Unit) {
+
+//        val movies2 = viewModel.getMoviesWithGenres(id).collectLatest { item ->
+////            movies = item
+//        }
+
+    }
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Black)
+            .padding(bottom = 5.dp, top = 5.dp)
+    ) {
 
         Column() {
 
@@ -64,10 +88,10 @@ fun CategoryItem(categoryName: String, movies: Movies?) {
 
             }
 
-            LazyRow(contentPadding =  PaddingValues(start = 15.dp,end = 30.dp)) {
+            LazyRow(contentPadding = PaddingValues(start = 15.dp, end = 30.dp)) {
 
                 movies?.let {
-                    items(it.results){
+                    items(it.results, contentType = { Results() }) {
 
                         MovieItem(
                             tv = true,

@@ -1,5 +1,7 @@
 package com.larrex.panorama.ui.screens.component
 
+import android.graphics.drawable.Drawable
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.toggleable
@@ -21,8 +23,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.request.RequestOptions
 import com.larrex.panorama.R
 import com.larrex.panorama.Util
+import com.skydoves.landscapist.animation.crossfade.CrossfadePlugin
+import com.skydoves.landscapist.components.ImageComponent
+import com.skydoves.landscapist.components.imageComponent
+import com.skydoves.landscapist.glide.GlideImage
+import com.skydoves.landscapist.placeholder.placeholder.PlaceholderPlugin
 
 @Composable
 fun MovieItem(tv: Boolean, imageUrl: String, onClick: () -> Unit) {
@@ -33,29 +42,31 @@ fun MovieItem(tv: Boolean, imageUrl: String, onClick: () -> Unit) {
         error = painterResource(id = R.drawable.gray)
     )
 
-    Box(modifier = Modifier) {
+    GlideImage(
+        imageModel = { imageUrl },
+        modifier = Modifier
+            .width(140.dp)
+            .height(200.dp)
+            .padding(start = 3.dp, end = 3.dp, top = 3.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .toggleable(
+                value = true,
+                enabled = true,
+                role = null,
+                onValueChange = {
 
-        Image(
-            painter = painter,
-            contentDescription = null,
-            modifier = Modifier
-                .width(140.dp)
-                .height(200.dp)
-                .padding(start = 3.dp, end = 3.dp, top = 3.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .toggleable(
-                    value = true,
-                    enabled = true,
-                    role = null,
-                    onValueChange = {
+                    onClick()
 
-                        onClick()
+                }), component = imageComponent {
 
-                    }), contentScale = ContentScale.Crop,
-            alignment = Alignment.Center
-        )
+            +PlaceholderPlugin.Loading(painterResource(id = R.drawable.gray))
+            +PlaceholderPlugin.Failure(painterResource(id = R.drawable.gray))
+            +CrossfadePlugin(duration = 350)
 
-    }
+        }
+
+    )
+
 }
 
 @Preview(showBackground = false)

@@ -66,7 +66,7 @@ fun CustomBottomNav(
         4,
     )
 
-    Surface(shadowElevation = 10.dp, color = Color.Black.copy(alpha = 0.6f)) {
+    Surface(color = Color.Black.copy(alpha = 0.6f)) {
 
         Row(
             modifier = Modifier

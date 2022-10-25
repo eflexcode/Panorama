@@ -27,15 +27,13 @@ import androidx.compose.ui.util.lerp
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.rememberAsyncImagePainter
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.larrex.panorama.R
 import com.larrex.panorama.Util
+import com.skydoves.landscapist.glide.GlideImage
 import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun TrendingItem(imageUrl: String, name: String, onClick: () -> Unit) {
 
@@ -48,8 +46,8 @@ fun TrendingItem(imageUrl: String, name: String, onClick: () -> Unit) {
     ) {
 
         GlideImage(
-            model = imageUrl,
-            contentDescription = null, modifier = Modifier
+            imageModel = {imageUrl},
+            modifier = Modifier
                 .fillMaxSize()
                 .drawWithCache {
 
@@ -70,8 +68,6 @@ fun TrendingItem(imageUrl: String, name: String, onClick: () -> Unit) {
                         onClick()
 
                     }),
-            contentScale = ContentScale.Crop,
-            alignment = Alignment.Center,
         )
 
         Text(
