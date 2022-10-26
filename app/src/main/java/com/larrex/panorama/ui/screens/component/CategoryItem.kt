@@ -27,7 +27,7 @@ import com.larrex.panorama.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun CategoryItem(categoryName: String, movies: Movies?) {
+fun CategoryItem(categoryName: String,tv : Boolean, movies: Movies?) {
 
     val viewModel = hiltViewModel<MainViewModel>()
 
@@ -94,7 +94,7 @@ fun CategoryItem(categoryName: String, movies: Movies?) {
                     items(it.results, contentType = { Results() }) {
 
                         MovieItem(
-                            tv = true,
+                            tv = tv,
                             imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
                         ) {
 

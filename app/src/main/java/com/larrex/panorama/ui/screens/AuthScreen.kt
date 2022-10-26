@@ -140,8 +140,6 @@ fun AuthScreen(application: Application, navHostController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-
-
             Text(
                 text = "Panorama.", modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,

@@ -18,8 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,18 +37,18 @@ import com.skydoves.landscapist.glide.GlideImage
 import kotlin.math.absoluteValue
 
 @Composable
-fun TrendingItem(imageUrl: String, name: String, onClick: () -> Unit) {
+fun TrendingItem(imageUrl: String, name: String, description: String, onClick: () -> Unit) {
 
     val colors = listOf<Color>(Color.White, Color.Black)
-
     Box(
         modifier = Modifier
-            .fillMaxWidth().background(Color.Black)
+            .fillMaxWidth()
+            .background(Color.Black)
             .height(450.dp), contentAlignment = Alignment.BottomCenter
     ) {
 
         GlideImage(
-            imageModel = {imageUrl},
+            imageModel = { imageUrl },
             modifier = Modifier
                 .fillMaxSize()
                 .drawWithCache {
@@ -70,21 +72,47 @@ fun TrendingItem(imageUrl: String, name: String, onClick: () -> Unit) {
                     }),
         )
 
-        Text(
-            text = name, modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 0.dp, end = 0.dp, bottom = 50.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontFamily = Util.quicksand,
-            maxLines = 2,
+        Box(modifier = Modifier.width(390.dp), Alignment.Center) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
+                Text(
+                    text = name,
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp, bottom = 20.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 25.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Util.quicksand,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
 
-        )
+                Text(
+                    text = description,
+                    modifier = Modifier
+                        .padding(end = 15.dp, start = 15.dp, top = 0.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 12.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 3,
+                    fontFamily = Util.quicksand,
+                    overflow = TextOverflow.Ellipsis
+
+                )
+
+            }
+        }
+
 
     }
+
+
 }
 
 @Preview(showBackground = true)

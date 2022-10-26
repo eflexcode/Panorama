@@ -1,28 +1,38 @@
 package com.larrex.panorama.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.larrex.panorama.R
 import com.larrex.panorama.domain.retrofit.model.Movies
 
 import com.larrex.panorama.ui.screens.component.CategoryItem
+import com.larrex.panorama.ui.screens.component.TrendingIndicator
 import com.larrex.panorama.ui.screens.component.TrendingItem
 import com.larrex.panorama.ui.viewmodel.MainViewModel
+import com.skydoves.landscapist.animation.crossfade.CrossfadePlugin
+import com.skydoves.landscapist.components.imageComponent
+import com.skydoves.landscapist.glide.GlideImage
+import com.skydoves.landscapist.placeholder.placeholder.PlaceholderPlugin
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 import kotlinx.coroutines.flow.collectLatest
 
+private const val TAG = "Movie"
 
 @OptIn(ExperimentalSnapperApi::class, ExperimentalPagerApi::class)
 @Composable
@@ -31,16 +41,14 @@ fun Movies() {
 
     val movies: MutableList<Movies?> = ArrayList<Movies?>()
 
-//    val user by viewModel.getUserDetails().collectAsState(initial = null)
     val trending by viewModel.getTrending().collectAsState(initial = null)
     val category by viewModel.getCategory().collectAsState(initial = null)
 
+    var currentIndicator by remember {
+        mutableStateOf(0)
+    }
 
-//    val painter = rememberAsyncImagePainter(
-//        model = user?.imageUrl,
-//        placeholder = painterResource(id = R.drawable.gray),
-//        error = painterResource(id = R.drawable.gray)
-//    )
+    val list: MutableList<Int> = ArrayList<Int>()
 
     category?.genres?.forEach {
 
@@ -66,43 +74,62 @@ fun Movies() {
 
             item {
 
-                LazyRow(modifier = Modifier, state, flingBehavior = behavior) {
+                Column(verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally) {
 
-                    if (trending != null) {
+                    LazyRow(
+                        modifier = Modifier, state, flingBehavior = behavior
+                    ) {
 
-                        items(trending!!.results) {
+                        if (trending != null) {
 
-                            it.title?.let { it1 ->
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(0.dp)
-                                        .background(
-                                            Color.Yellow,
-                                            RoundedCornerShape(
-                                                bottomStart = 20.dp,
-                                                bottomEnd = 20.dp
-                                            )
-                                        )
-                                ) {
-                                    TrendingItem(
-                                        imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
-                                        it1
-                                    ) {
+                            itemsIndexed(trending!!.results) { index, it ->
 
+                                currentIndicator += 1
 
+                                it.title?.let { it1 ->
+
+                                    it.overview?.let { it2 ->
+                                        TrendingItem(
+                                            imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
+                                            it1, it2
+                                        ) {
+
+                                            Log.d(TAG, "Movies: " + list)
+                                            Log.d(TAG, "Movies: " + trending!!.results.size)
+
+                                        }
                                     }
                                 }
+
                             }
                         }
                     }
+
+//                    LazyRow() {
+//
+//                        items(13) {
+//                            TrendingIndicator(it == currentIndicator)
+//
+//                        }
+//
+//                    }
+
                 }
+
             }
 
             category?.let {
-                itemsIndexed(it.genres) { index,item ->
+                itemsIndexed(it.genres) { index, item ->
 
-                    item.name?.let { it1 -> item.id?.let { it2 -> CategoryItem(it1, movies[index]) } }
+                    item.name?.let { it1 ->
+                        item.id?.let { it2 ->
+                            CategoryItem(
+                                it1,false,
+                                movies[index]
+                            )
+                        }
+                    }
 
                 }
             }

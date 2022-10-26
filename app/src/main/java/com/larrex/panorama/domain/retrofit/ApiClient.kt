@@ -15,6 +15,9 @@ interface ApiClient {
     @GET("genre/movie/list?api_key="+Util.API_KEY+"&language=en-US")
     fun getCategory() : Call<Category>
 
+    @GET("genre/tv/list?api_key="+Util.API_KEY+"&language=en-US")
+    fun getCategoryTv() : Call<Category>
+
     @GET("discover/movie?api_key="+Util.API_KEY)
     fun getMoviesWithGenres(@Query("with_genres")  id : String) : Call<Movies>
 
