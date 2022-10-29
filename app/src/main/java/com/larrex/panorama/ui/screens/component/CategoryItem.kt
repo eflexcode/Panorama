@@ -19,15 +19,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.larrex.panorama.Util
 import com.larrex.panorama.R
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.Results
+import com.larrex.panorama.ui.screens.navigation.NavScreens
 import com.larrex.panorama.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun CategoryItem(categoryName: String,tv : Boolean, movies: Movies?) {
+fun CategoryItem(categoryName: String,tv : Boolean,navController: NavController, movies: Movies?) {
 
     val viewModel = hiltViewModel<MainViewModel>()
 
@@ -52,7 +54,7 @@ fun CategoryItem(categoryName: String,tv : Boolean, movies: Movies?) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.Black)
-            .padding(bottom = 5.dp, top = 5.dp)
+            .padding(bottom = 0.dp, top = 0.dp)
     ) {
 
         Column() {
@@ -97,6 +99,8 @@ fun CategoryItem(categoryName: String,tv : Boolean, movies: Movies?) {
                             tv = tv,
                             imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
                         ) {
+
+                            navController.navigate(NavScreens.MovieDetails.route)
 
                         }
 

@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.larrex.panorama.R
@@ -36,7 +37,7 @@ private const val TAG = "Movie"
 
 @OptIn(ExperimentalSnapperApi::class, ExperimentalPagerApi::class)
 @Composable
-fun Movies() {
+fun Movies(navController: NavController) {
     val viewModel = hiltViewModel<MainViewModel>()
 
     val movies: MutableList<Movies?> = ArrayList<Movies?>()
@@ -60,10 +61,13 @@ fun Movies() {
     val state = rememberLazyListState()
     val behavior = rememberSnapperFlingBehavior(state)
 
+//    state.layoutInfo.visibleItemsInfo.last().index
+
     val uiControl = rememberSystemUiController()
 
     uiControl.setSystemBarsColor(Color.Black)
 
+    val selected by remember { derivedStateOf { state.layoutInfo.visibleItemsInfo.lastIndex + state.firstVisibleItemIndex } }
 
     Box(
         modifier = Modifier
@@ -74,8 +78,10 @@ fun Movies() {
 
             item {
 
-                Column(verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
                     LazyRow(
                         modifier = Modifier, state, flingBehavior = behavior
@@ -106,14 +112,15 @@ fun Movies() {
                         }
                     }
 
-//                    LazyRow() {
-//
-//                        items(13) {
-//                            TrendingIndicator(it == currentIndicator)
-//
-//                        }
-//
-//                    }
+                    LazyRow() {
+
+                        items(13) {
+
+                            TrendingIndicator(state.firstVisibleItemIndex == it)
+
+                        }
+
+                    }
 
                 }
 
@@ -125,7 +132,7 @@ fun Movies() {
                     item.name?.let { it1 ->
                         item.id?.let { it2 ->
                             CategoryItem(
-                                it1,false,
+                                it1, false,navController,
                                 movies[index]
                             )
                         }

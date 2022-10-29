@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.larrex.panorama.Util
 import com.larrex.panorama.ui.theme.ChipBackground
 import com.larrex.panorama.ui.theme.NavColor
 
@@ -46,9 +47,9 @@ fun ProviderChip(
                 text = chipText,
                 fontSize = 15.sp,
                 fontStyle = FontStyle.Normal,
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Medium,
-                color = if (chipSelected) Color.Black else Color.Gray
+                fontWeight = FontWeight.Bold,
+                color = if (chipSelected) Color.Black else Color.Gray,
+                fontFamily = Util.quicksand
             )
 
         }

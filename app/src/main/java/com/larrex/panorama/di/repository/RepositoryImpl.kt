@@ -140,6 +140,14 @@ class RepositoryImpl @Inject constructor(
 
                 emit(trending.body())
 
+            } else {
+                val trending1 = apiClient.getTrending().execute()
+
+                if (trending1.isSuccessful) {
+
+                    emit(trending1.body())
+
+                }
             }
 
 
@@ -151,6 +159,21 @@ class RepositoryImpl @Inject constructor(
         return flow<Category?> {
 
             val category = apiClient.getCategory().execute()
+
+            if (category.isSuccessful) {
+
+                emit(category.body())
+
+            }
+
+
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getCategoryTv(): Flow<Category?> {
+        return flow<Category?> {
+
+            val category = apiClient.getCategoryTv().execute()
 
             if (category.isSuccessful) {
 
@@ -176,6 +199,37 @@ class RepositoryImpl @Inject constructor(
 
         }.flowOn(Dispatchers.IO)
 
+    }
+
+    override fun getTvWithGenres(id: String): Flow<Movies?> {
+
+        return flow<Movies?> {
+
+            val tv = apiClient.getTvWithGenres(id).execute()
+
+            if (tv.isSuccessful) {
+
+                emit(tv.body())
+
+            }
+
+        }.flowOn(Dispatchers.IO)
+
+
+    }
+
+    override fun getTvWithNetwork(id: String,page:String): Flow<Movies?> {
+        return flow<Movies?> {
+
+            val tv = apiClient.getTvWithNetwork(id,page).execute()
+
+            if (tv.isSuccessful) {
+
+                emit(tv.body())
+
+            }
+
+        }.flowOn(Dispatchers.IO)
     }
 
 

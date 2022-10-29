@@ -21,4 +21,10 @@ interface ApiClient {
     @GET("discover/movie?api_key="+Util.API_KEY)
     fun getMoviesWithGenres(@Query("with_genres")  id : String) : Call<Movies>
 
+    @GET("discover/tv?api_key="+Util.API_KEY+"&sort_by=popularity.desc")
+    fun getTvWithGenres(@Query("with_genres")  id : String) : Call<Movies>
+
+    @GET("discover/tv?api_key="+Util.API_KEY)
+    fun getTvWithNetwork(@Query("with_networks")  id : String ,@Query("page")  page : String) : Call<Movies>
+
 }

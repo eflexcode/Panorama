@@ -2,7 +2,6 @@ package com.larrex.panorama.ui.screens.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,10 +18,10 @@ fun BottomNavGraph(navHostController: NavHostController) {
     NavHost(navController = navHostController, startDestination = NavScreens.Movies.route) {
 
         composable(NavScreens.Movies.route) {
-            Movies()
+            Movies(navHostController)
         }
         composable(NavScreens.TvShows.route) {
-            TvShows()
+            TvShows(navHostController)
         }
         composable(NavScreens.Search.route) {
             Search()
@@ -32,6 +31,12 @@ fun BottomNavGraph(navHostController: NavHostController) {
         }
         composable(NavScreens.Profile.route) {
             Profile()
+        }
+        composable(NavScreens.MovieDetails.route) {
+           MovieDetails()
+        }
+        composable (NavScreens.TvDetails.route) {
+           TvDetails()
         }
 
     }

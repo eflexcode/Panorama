@@ -7,5 +7,7 @@ sealed class NavScreens(val route: String) {
     object Search : NavScreens("Search")
     object Favorite : NavScreens("Favorite")
     object Profile : NavScreens("Profile")
+    object MovieDetails : NavScreens("MovieDetails")
+    object TvDetails : NavScreens("TvDetails")
 
 }

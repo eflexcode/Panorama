@@ -47,10 +47,27 @@ class MainViewModel @Inject constructor(private var repository: Repository) : Vi
         return repository.getCategory()
 
     }
+    fun getCategoryTv(): Flow<Category?> {
+
+        return repository.getCategoryTv()
+
+    }
 
     fun getMoviesWithGenres(id : String): Flow<Movies?> {
 
         return repository.getMoviesWithGenres(id)
+
+    }
+
+    fun getTvWithGenres(id : String): Flow<Movies?> {
+
+        return repository.getTvWithGenres(id)
+
+    }
+
+    fun getTvWithNetwork(id : String,page:String): Flow<Movies?> {
+
+        return repository.getTvWithNetwork(id,page)
 
     }
 
