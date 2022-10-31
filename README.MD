@@ -12,7 +12,6 @@
 [comment]: <> (![ScreenShot]&#40;/image/image4.png&#41;)
 
 [comment]: <> (![ScreenShot]&#40;/image/image5.gif&#41;)
-Get the app in [Google play store](https://play.google.com/store/apps/details?id=com.larrex.newsappwithcompose)
 <p float="left">
   <img src="/image/image1.png" width="250" /> 
   <img src="/image/image2.png" width="250" /> 
