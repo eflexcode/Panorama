@@ -15,6 +15,7 @@ import com.larrex.panorama.domain.repository.Repository
 import com.larrex.panorama.domain.retrofit.ApiClient
 import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
+import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -230,6 +231,22 @@ class RepositoryImpl @Inject constructor(
             }
 
         }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getMovieDetails(id: String): Flow<MovieDetails?> {
+
+        return flow<MovieDetails?> {
+
+            val movie = apiClient.getMovieDetails(id).execute()
+
+            if (movie.isSuccessful) {
+
+                emit(movie.body())
+
+            }
+
+        }.flowOn(Dispatchers.IO)
+
     }
 
 

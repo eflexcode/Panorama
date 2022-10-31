@@ -99,7 +99,7 @@ fun CategoryItem(categoryName: String,tv : Boolean,navController: NavController,
                             tv = tv,
                             imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
                         ) {
-
+                            navController.currentBackStackEntry?.savedStateHandle?.set("id", it.id.toString())
                             navController.navigate(NavScreens.MovieDetails.route)
 
                         }

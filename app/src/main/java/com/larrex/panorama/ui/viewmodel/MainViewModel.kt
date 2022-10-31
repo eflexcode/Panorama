@@ -8,6 +8,7 @@ import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.repository.Repository
 import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
+import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -47,27 +48,34 @@ class MainViewModel @Inject constructor(private var repository: Repository) : Vi
         return repository.getCategory()
 
     }
+
     fun getCategoryTv(): Flow<Category?> {
 
         return repository.getCategoryTv()
 
     }
 
-    fun getMoviesWithGenres(id : String): Flow<Movies?> {
+    fun getMoviesWithGenres(id: String): Flow<Movies?> {
 
         return repository.getMoviesWithGenres(id)
 
     }
 
-    fun getTvWithGenres(id : String): Flow<Movies?> {
+    fun getTvWithGenres(id: String): Flow<Movies?> {
 
         return repository.getTvWithGenres(id)
 
     }
 
-    fun getTvWithNetwork(id : String,page:String): Flow<Movies?> {
+    fun getTvWithNetwork(id: String, page: String): Flow<Movies?> {
 
-        return repository.getTvWithNetwork(id,page)
+        return repository.getTvWithNetwork(id, page)
+
+    }
+
+    fun getMovieDetails(id: String): Flow<MovieDetails?> {
+
+        return repository.getMovieDetails(id)
 
     }
 

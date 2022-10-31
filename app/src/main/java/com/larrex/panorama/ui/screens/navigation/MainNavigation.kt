@@ -33,7 +33,12 @@ fun BottomNavGraph(navHostController: NavHostController) {
             Profile()
         }
         composable(NavScreens.MovieDetails.route) {
-           MovieDetails()
+
+            val id = navHostController.previousBackStackEntry?.savedStateHandle?.get<String>("id")
+
+            if (id != null) {
+                MovieDetails(id)
+            }
         }
         composable (NavScreens.TvDetails.route) {
            TvDetails()
