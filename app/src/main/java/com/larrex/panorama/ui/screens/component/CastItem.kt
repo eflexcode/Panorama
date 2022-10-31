@@ -20,11 +20,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
@@ -38,40 +42,52 @@ import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.placeholder.placeholder.PlaceholderPlugin
 
 @Composable
-fun CastItem(imageUrl: String,name :String, onClick: () -> Unit) {
+fun CastItem(imageUrl: String, name: String, onClick: () -> Unit) {
 
-    Box(
-        modifier = Modifier
-            .width(140.dp)
-            .height(100.dp)
-            .padding(3.dp),
-        contentAlignment = Alignment.TopEnd
+    val painter = rememberAsyncImagePainter(
+        model = imageUrl,
+        placeholder = painterResource(id = R.drawable.gray),
+        error = painterResource(
+            id = R.drawable.gray
+        )
+    )
+
+    Column(
+        modifier = Modifier.width(120.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        GlideImage(
+        com.skydoves.landscapist.glide.GlideImage(
             imageModel = { imageUrl },
             modifier = Modifier
-                .fillMaxSize()
-
-                .clip(RoundedCornerShape(10.dp))
-                .toggleable(
-                    value = true,
-                    enabled = true,
-                    role = null,
-                    onValueChange = {
-
-                        onClick()
-
-                    }), component = imageComponent {
+                .width(110.dp)
+                .height(80.dp)
+                .padding(3.dp)
+                .clip(RoundedCornerShape(10.dp)), component = imageComponent {
 
                 +PlaceholderPlugin.Loading(painterResource(id = R.drawable.gray))
                 +PlaceholderPlugin.Failure(painterResource(id = R.drawable.gray))
                 +CrossfadePlugin(duration = 350)
-
             }
 
         )
 
+        Text(
+            text = name,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 5.dp, start = 5.dp, top = 0.dp),
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp,
+            color = Color.White,
+            fontWeight = FontWeight.Medium,
+            fontFamily = Util.quicksand,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+
+
+        )
 
 
     }
@@ -81,7 +97,7 @@ fun CastItem(imageUrl: String,name :String, onClick: () -> Unit) {
 @Composable
 fun CastPre() {
 
-    CastItem(imageUrl = "","Eze Larry Ifeanyi") {
+    CastItem(imageUrl = "", "Eze Larry Ifeanyi") {
 
     }
 

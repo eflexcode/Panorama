@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
@@ -35,6 +37,7 @@ import com.larrex.panorama.R
 import com.larrex.panorama.Util
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
+import com.larrex.panorama.ui.screens.component.CastItem
 import com.larrex.panorama.ui.theme.ChipBackground
 import com.larrex.panorama.ui.theme.Green
 import com.larrex.panorama.ui.viewmodel.MainViewModel
@@ -53,9 +56,11 @@ fun MovieDetails(id: String) {
 
     val viewModel = hiltViewModel<MainViewModel>()
 
-    Log.d(TAG, "MovieDetails: "+id)
+    Log.d(TAG, "MovieDetails: " + id)
 
     val movieDetails by viewModel.getMovieDetails(id).collectAsState(initial = null)
+    val credits by viewModel.getMovieCredits(id).collectAsState(initial = null)
+
     Box(
         modifier = Modifier
             .background(Color.Black)
@@ -76,7 +81,7 @@ fun MovieDetails(id: String) {
             ) {
 
                 GlideImage(
-                    imageModel = { "https://image.tmdb.org/t/p/w780"+ movieDetails?.posterPath },
+                    imageModel = { "https://image.tmdb.org/t/p/w780" + movieDetails?.posterPath },
                     modifier = Modifier
                         .fillMaxSize()
                         .drawWithCache {
@@ -142,7 +147,7 @@ fun MovieDetails(id: String) {
                 }
 
                 Text(
-                    text = "Rating "+movieDetails?.voteAverage,
+                    text = "Rating " + movieDetails?.voteAverage,
                     fontSize = 16.sp,
                     fontStyle = FontStyle.Normal,
                     fontWeight = FontWeight.Normal,
@@ -153,7 +158,7 @@ fun MovieDetails(id: String) {
             }
 
             Text(
-                text = movieDetails?.title +"",
+                text = movieDetails?.title + "",
                 textAlign = TextAlign.Start,
                 fontSize = 35.sp,
                 color = Color.White,
@@ -184,7 +189,7 @@ fun MovieDetails(id: String) {
                     ) {
 
                         Text(
-                            text = it.name+"",
+                            text = it.name + "",
                             fontSize = 15.sp,
                             fontStyle = FontStyle.Normal,
                             fontWeight = FontWeight.Bold,
@@ -204,7 +209,7 @@ fun MovieDetails(id: String) {
             }
 
             Text(
-                text = movieDetails?.overview +"",
+                text = movieDetails?.overview + "",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(end = 40.dp, start = 20.dp, top = 0.dp),
@@ -215,6 +220,36 @@ fun MovieDetails(id: String) {
                 fontFamily = Util.quicksand
 
             )
+
+            Text(
+                text = "Cast",
+                textAlign = TextAlign.Start,
+                fontSize = 20.sp,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontFamily = Util.quicksand,
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 5.dp, top = 5.dp, bottom = 0.dp)
+
+            )
+
+            LazyRow(contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 100.dp)) {
+
+                credits?.let {
+                    items(it.cast) {
+
+                        CastItem(
+                            imageUrl = "https://image.tmdb.org/t/p/w780" + it.profilePath,
+                            name = it.name + ""
+                        ) {
+
+                        }
+
+                    }
+                }
+
+
+            }
 
         }
 
