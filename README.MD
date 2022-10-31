@@ -18,4 +18,5 @@
   <img src="/image/image3.png" width="250" /> 
   <img src="/image/image4.png" width="250" />
   <img src="/image/image5.gif" width="250" />
+  <img src="/image/image6.gif" width="250" />
 </p>
