@@ -102,7 +102,7 @@ fun TvShows(navHostController: NavHostController) {
 
                         it.name?.let { it1 ->
                             CategoryItem(
-                                it1, false,navHostController,
+                                it1, false, navHostController,
                                 movies[index]
                             )
                         }
@@ -122,7 +122,7 @@ fun TvShows(navHostController: NavHostController) {
 
             if (networkShows != null) {
 
-                for (tvShow in networkShows!!.results){
+                for (tvShow in networkShows!!.results) {
 
                     tv.add(tvShow)
                 }
@@ -155,7 +155,7 @@ fun TvShows(navHostController: NavHostController) {
                     }
 
                 }
-                
+
 //                item {
 //
 //                    Box(modifier = Modifier){
@@ -169,7 +169,7 @@ fun TvShows(navHostController: NavHostController) {
 //                    }
 //
 //                }
-                
+
             }
 
         }

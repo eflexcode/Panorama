@@ -5,6 +5,7 @@ import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.moviedetails.Credits
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
+import com.larrex.panorama.domain.retrofit.model.moviedetails.TvDetails
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Part
@@ -36,6 +37,9 @@ interface ApiClient {
 
     @GET("movie/{movie_id}?api_key="+Util.API_KEY+"&language=en-US")
     fun getMovieDetails(@Path("movie_id") id: String): Call<MovieDetails>
+
+    @GET("tv/{tv_id}?api_key="+Util.API_KEY+"&language=en-US")
+    fun getTvDetails(@Path("tv_id") id: String): Call<TvDetails>
 
     @GET("movie/{movie_id}/credits?api_key="+Util.API_KEY+"&language=en-US")
     fun getMovieCredits(@Path("movie_id") id: String): Call<Credits>
