@@ -262,9 +262,11 @@ fun MovieDetails(id: String) {
 
         }
     } else {
-        Box(contentAlignment = Alignment.Center) {
+        Box(contentAlignment = Alignment.Center,modifier = Modifier
+            .background(Color.Black)
+            .fillMaxSize()) {
 
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = Color.White)
 
         }
     }

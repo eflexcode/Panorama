@@ -67,7 +67,7 @@ fun TvDetails(id: String) {
     Log.d(TAG, "MovieDetails: " + id)
 
     val tvDetails by viewModel.getTvDetails(id).collectAsState(initial = null)
-//        val credits by viewModel.getMovieCredits(id).collectAsState(initial = null)
+    val credits by viewModel.getTvCredits(id).collectAsState(initial = null)
 
 
     if (tvDetails != null) {
@@ -249,7 +249,7 @@ fun TvDetails(id: String) {
                         start = 20.dp,
                         end = 20.dp,
                         top = 10.dp,
-                        bottom = 100.dp
+                        bottom = 0.dp
                     ), state = state, flingBehavior = behavior
                 ) {
 
@@ -263,32 +263,55 @@ fun TvDetails(id: String) {
 
                 }
 
-//                LazyRow(contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 100.dp)) {
-//
-//                    credits?.let {
-//                        items(it.cast) {
-//
-//                            CastItem(
-//                                imageUrl = "https://image.tmdb.org/t/p/w780" + it.profilePath,
-//                                name = it.name + ""
-//                            ) {
-//
-//                            }
-//
-//                        }
-//                    }
-//
-//
-//                }
+                Text(
+                    text = "Cast",
+                    textAlign = TextAlign.Start,
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Util.quicksand,
+                    modifier = Modifier
+                        .padding(start = 20.dp, end = 5.dp, top = 5.dp, bottom = 0.dp)
+
+                )
+
+                LazyRow(
+                    contentPadding = PaddingValues(
+                        start = 20.dp,
+                        end = 20.dp,
+                        top = 10.dp,
+                        bottom = 100.dp
+                    )
+                ) {
+
+                    credits?.let {
+                        items(it.cast) {
+
+                            CastItem(
+                                imageUrl = "https://image.tmdb.org/t/p/w780" + it.profilePath,
+                                name = it.name + ""
+                            ) {
+
+                            }
+
+                        }
+                    }
+
+
+                }
 
             }
 
         }
     } else {
 
-        Box(contentAlignment = Alignment.Center) {
+        Box(
+            contentAlignment = Alignment.Center, modifier = Modifier
+                .background(Color.Black)
+                .fillMaxSize()
+        ) {
 
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = Color.White)
 
         }
     }

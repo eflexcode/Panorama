@@ -16,6 +16,7 @@ import com.larrex.panorama.domain.retrofit.ApiClient
 import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.moviedetails.Credits
+import com.larrex.panorama.domain.retrofit.model.moviedetails.CreditsTv
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
 import com.larrex.panorama.domain.retrofit.model.moviedetails.TvDetails
 import kotlinx.coroutines.Dispatchers
@@ -281,6 +282,20 @@ class RepositoryImpl @Inject constructor(
 
         }.flowOn(Dispatchers.IO)
 
+    }
+
+    override fun getTvCredits(id: String): Flow<CreditsTv?> {
+        return flow<CreditsTv?> {
+
+            val credits = apiClient.getTvCredits(id).execute()
+
+            if (credits.isSuccessful) {
+
+                emit(credits.body())
+
+            }
+
+        }.flowOn(Dispatchers.IO)
     }
 
 }
