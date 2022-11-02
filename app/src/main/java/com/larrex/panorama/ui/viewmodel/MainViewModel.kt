@@ -10,6 +10,7 @@ import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.moviedetails.Credits
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
+import com.larrex.panorama.domain.retrofit.model.moviedetails.TvDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -83,6 +84,12 @@ class MainViewModel @Inject constructor(private var repository: Repository) : Vi
     fun getMovieCredits(id: String): Flow<Credits?> {
 
         return repository.getMovieCredits(id)
+
+    }
+
+     fun getTvDetails(id: String): Flow<TvDetails?> {
+
+        return repository.getTvDetails(id)
 
     }
 

@@ -3,6 +3,7 @@ package com.larrex.panorama
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import java.text.SimpleDateFormat
 import java.util.*
 
 class Util {
@@ -35,6 +36,15 @@ class Util {
                 "Good night,"
             }
 
+        }
+
+        fun formatDate(oldDate: String): String {
+
+
+            val format = SimpleDateFormat("yyyy-MM-dd")
+            val date = format.parse(oldDate)
+            return format
+                .format(date)
         }
     }
 

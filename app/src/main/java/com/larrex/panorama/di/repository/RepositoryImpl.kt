@@ -17,6 +17,7 @@ import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.moviedetails.Credits
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
+import com.larrex.panorama.domain.retrofit.model.moviedetails.TvDetails
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -220,10 +221,10 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-    override fun getTvWithNetwork(id: String,page:String): Flow<Movies?> {
+    override fun getTvWithNetwork(id: String, page: String): Flow<Movies?> {
         return flow<Movies?> {
 
-            val tv = apiClient.getTvWithNetwork(id,page).execute()
+            val tv = apiClient.getTvWithNetwork(id, page).execute()
 
             if (tv.isSuccessful) {
 
@@ -264,8 +265,22 @@ class RepositoryImpl @Inject constructor(
 
         }.flowOn(Dispatchers.IO)
 
-
     }
 
+    override fun getTvDetails(id: String): Flow<TvDetails?> {
+
+        return flow<TvDetails?> {
+
+            val tvDetails = apiClient.getTvDetails(id).execute()
+
+            if (tvDetails.isSuccessful) {
+
+                emit(tvDetails.body())
+
+            }
+
+        }.flowOn(Dispatchers.IO)
+
+    }
 
 }

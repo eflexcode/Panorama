@@ -35,13 +35,13 @@ interface ApiClient {
         @Query("page") page: String
     ): Call<Movies>
 
-    @GET("movie/{movie_id}?api_key="+Util.API_KEY+"&language=en-US")
+    @GET("movie/{movie_id}?api_key=" + Util.API_KEY + "&language=en-US")
     fun getMovieDetails(@Path("movie_id") id: String): Call<MovieDetails>
 
-    @GET("tv/{tv_id}?api_key="+Util.API_KEY+"&language=en-US")
+    @GET("tv/{tv_id}?api_key=" + Util.API_KEY + "&language=en-US")
     fun getTvDetails(@Path("tv_id") id: String): Call<TvDetails>
 
-    @GET("movie/{movie_id}/credits?api_key="+Util.API_KEY+"&language=en-US")
+    @GET("movie/{movie_id}/credits?api_key=" + Util.API_KEY + "&language=en-US")
     fun getMovieCredits(@Path("movie_id") id: String): Call<Credits>
 
 }

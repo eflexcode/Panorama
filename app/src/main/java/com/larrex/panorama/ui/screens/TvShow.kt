@@ -28,6 +28,7 @@ import com.larrex.panorama.domain.retrofit.model.Results
 import com.larrex.panorama.ui.screens.component.CategoryItem
 import com.larrex.panorama.ui.screens.component.MovieItem
 import com.larrex.panorama.ui.screens.component.ProviderChip
+import com.larrex.panorama.ui.screens.navigation.NavScreens
 import com.larrex.panorama.ui.viewmodel.MainViewModel
 
 private const val TAG = "TvShow"
@@ -102,7 +103,7 @@ fun TvShows(navHostController: NavHostController) {
 
                         it.name?.let { it1 ->
                             CategoryItem(
-                                it1, false, navHostController,
+                                it1, true, navHostController,
                                 movies[index]
                             )
                         }
@@ -150,7 +151,10 @@ fun TvShows(navHostController: NavHostController) {
                             tv = false,
                             imageUrl = "https://image.tmdb.org/t/p/w780" + item.posterPath
                         ) {
-                            page += 1
+
+                            navHostController.currentBackStackEntry?.savedStateHandle?.set("tvId",item.id.toString())
+
+                            navHostController.navigate(NavScreens.TvDetails.route)
                         }
                     }
 

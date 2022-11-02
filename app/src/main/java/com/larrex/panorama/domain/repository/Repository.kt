@@ -7,6 +7,7 @@ import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.moviedetails.Credits
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
+import com.larrex.panorama.domain.retrofit.model.moviedetails.TvDetails
 import kotlinx.coroutines.flow.Flow
 
 interface Repository {
@@ -24,5 +25,6 @@ interface Repository {
     fun getTvWithNetwork(id: String,page :String): Flow<Movies?>
     fun getMovieDetails(id: String): Flow<MovieDetails?>
     fun getMovieCredits(id: String): Flow<Credits?>
+     fun getTvDetails(id: String): Flow<TvDetails?>
 
 }

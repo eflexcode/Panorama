@@ -17,7 +17,7 @@ data class TvDetails(
     @SerializedName("last_air_date") var lastAirDate: String? = null,
     @SerializedName("last_episode_to_air") var lastEpisodeToAir: LastEpisodeToAir? = LastEpisodeToAir(),
     @SerializedName("name") var name: String? = null,
-    @SerializedName("next_episode_to_air") var nextEpisodeToAir: String? = null,
+    @SerializedName("next_episode_to_air") var nextEpisodeToAir: NextEpisodeToAir? = NextEpisodeToAir(),
     @SerializedName("networks") var networks: ArrayList<Networks> = arrayListOf(),
     @SerializedName("number_of_episodes") var numberOfEpisodes: Int? = null,
     @SerializedName("number_of_seasons") var numberOfSeasons: Int? = null,

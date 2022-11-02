@@ -29,7 +29,7 @@ import com.larrex.panorama.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun CategoryItem(categoryName: String,tv : Boolean,navController: NavController, movies: Movies?) {
+fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController, movies: Movies?) {
 
     val viewModel = hiltViewModel<MainViewModel>()
 
@@ -99,9 +99,18 @@ fun CategoryItem(categoryName: String,tv : Boolean,navController: NavController,
                             tv = tv,
                             imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
                         ) {
-                            navController.currentBackStackEntry?.savedStateHandle?.set("id", it.id.toString())
-                            navController.navigate(NavScreens.MovieDetails.route)
+                            if (tv) {
+                                navController.currentBackStackEntry?.savedStateHandle?.set("tvId",it.id.toString())
 
+                                navController.navigate(NavScreens.TvDetails.route)
+                            } else {
+
+                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                    "id",
+                                    it.id.toString()
+                                )
+                                navController.navigate(NavScreens.MovieDetails.route)
+                            }
                         }
 
                     }
