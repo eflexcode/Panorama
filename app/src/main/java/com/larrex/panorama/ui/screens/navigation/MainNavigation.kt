@@ -1,5 +1,6 @@
 package com.larrex.panorama.ui.screens.navigation
 
+import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
@@ -9,7 +10,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.larrex.panorama.ui.screens.*
 
 @Composable
-fun BottomNavGraph(navHostController: NavHostController) {
+fun BottomNavGraph(navHostController: NavHostController,application: Application) {
 
     val uiControl = rememberSystemUiController()
 
@@ -18,7 +19,7 @@ fun BottomNavGraph(navHostController: NavHostController) {
     NavHost(navController = navHostController, startDestination = NavScreens.Movies.route) {
 
         composable(NavScreens.Movies.route) {
-            Movies(navHostController)
+            Movies(navHostController,application)
         }
         composable(NavScreens.TvShows.route) {
             TvShows(navHostController)

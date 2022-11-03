@@ -1,6 +1,8 @@
 package com.larrex.panorama.ui.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.AuthCredential
 import com.larrex.panorama.core.Result
@@ -14,12 +16,13 @@ import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
 import com.larrex.panorama.domain.retrofit.model.moviedetails.TvDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
 private const val TAG = "MainViewModel"
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private var repository: Repository) : ViewModel() {
+class MainViewModel @Inject constructor(private var repository: Repository,private val savedStateHandle: SavedStateHandle) : ViewModel() {
 
     suspend fun doGoogleAuth(authCredential: AuthCredential?): Flow<Result> {
 
@@ -28,6 +31,12 @@ class MainViewModel @Inject constructor(private var repository: Repository) : Vi
         return repository.doGoogleAuth(authCredential)
 
     }
+
+//    init {
+//        getMoviesWithGenres()
+//    }
+
+    var category = "Any"
 
     fun authState(): Flow<Boolean> {
 
@@ -60,6 +69,7 @@ class MainViewModel @Inject constructor(private var repository: Repository) : Vi
 
     fun getMoviesWithGenres(id: String): Flow<Movies?> {
 
+
         return repository.getMoviesWithGenres(id)
 
     }
@@ -88,11 +98,12 @@ class MainViewModel @Inject constructor(private var repository: Repository) : Vi
 
     }
 
-     fun getTvDetails(id: String): Flow<TvDetails?> {
+    fun getTvDetails(id: String): Flow<TvDetails?> {
 
         return repository.getTvDetails(id)
 
     }
+
     fun getTvCredits(id: String): Flow<CreditsTv?> {
 
         return repository.getTvCredits(id)

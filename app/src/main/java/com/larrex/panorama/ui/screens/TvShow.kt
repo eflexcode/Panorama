@@ -1,5 +1,6 @@
 package com.larrex.panorama.ui.screens
 
+import android.util.DisplayMetrics
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,10 +10,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -79,156 +84,137 @@ fun TvShows(navHostController: NavHostController) {
 
     val categoryTv by viewModel.getCategoryTv().collectAsState(initial = null)
 
-    val movies: MutableList<Movies?> = ArrayList<Movies?>()
+    if (categoryTv == null) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .background(Color.Black)
+                .fillMaxSize()
+        ) {
 
-    categoryTv?.genres?.forEach {
+            CircularProgressIndicator(color = Color.White)
 
-        val movie by viewModel.getTvWithGenres(it.id.toString()).collectAsState(initial = null)
+        }
+    } else {
 
-        movies.add(movie)
-    }
+        Box(
+            modifier = Modifier
+                .background(Color.Black)
+                .fillMaxSize()
+        ) {
 
-    Box(
-        modifier = Modifier
-            .background(Color.Black)
-            .fillMaxSize()
-    ) {
+            if (selected == "Any") {
 
-        if (selected == "Any") {
+                Column(
+                    Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(bottom = 70.dp, top = 150.dp)
+                ) {
 
-            LazyColumn(contentPadding = PaddingValues(bottom = 70.dp, top = 150.dp)) {
-
-                categoryTv?.let {
-                    itemsIndexed(it.genres) { index, it ->
-
+                    categoryTv?.genres?.forEach {
+                        val movie by viewModel.getTvWithGenres(it.id.toString())
+                            .collectAsState(initial = null)
                         it.name?.let { it1 ->
                             CategoryItem(
                                 it1, true, navHostController,
-                                movies[index]
+                                movie
                             )
                         }
-
                     }
                 }
+            } else {
 
-            }
-        } else {
+                val tv: MutableList<Results?> = ArrayList<Results?>()
 
-            val tv: MutableList<Results?> = ArrayList<Results?>()
+                val networkShows by viewModel.getTvWithNetwork(
+                    id = selectedID.toString(),
+                    page = page.toString()
+                ).collectAsState(initial = null)
 
-            val networkShows by viewModel.getTvWithNetwork(
-                id = selectedID.toString(),
-                page = page.toString()
-            ).collectAsState(initial = null)
+                Column {
 
-            if (networkShows != null) {
 
-                for (tvShow in networkShows!!.results) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        contentPadding = PaddingValues(bottom = 70.dp, top = 150.dp)
+                    ) {
 
-                    tv.add(tvShow)
-                }
+                        networkShows?.let {
+                            itemsIndexed(it.results) { index, item ->
 
-            }
+                                loadMore = tv.size - 1 == index
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                contentPadding = PaddingValues(bottom = 70.dp, top = 150.dp)
-            ) {
+                                if (tv.size - 1 == index) {
 
-                itemsIndexed(tv) { index, item ->
+                                    Log.d(TAG, "TvShows: $page")
 
-                    loadMore = tv.size - 1 == index
+                                    loadMore = false
 
-                    if (tv.size - 1 == index) {
+                                }
+                                MovieItem(
+                                    tv = false,
+                                    imageUrl = "https://image.tmdb.org/t/p/w780" + item.posterPath
+                                ) {
 
-                        Log.d(TAG, "TvShows: $page")
+                                    navHostController.currentBackStackEntry?.savedStateHandle?.set(
+                                        "tvId",
+                                        item.id.toString()
+                                    )
 
-                        loadMore = false
+                                    navHostController.navigate(NavScreens.TvDetails.route)
+                                }
+
+                            }
+                        }
 
                     }
-                    if (item != null) {
-                        MovieItem(
-                            tv = false,
-                            imageUrl = "https://image.tmdb.org/t/p/w780" + item.posterPath
+
+                }
+
+                Surface(color = Color.Black.copy(alpha = 0.6f)) {
+
+                    Column() {
+
+                        Text(
+                            text = "Tv Shows.", modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 20.dp, top = 35.dp),
+                            textAlign = TextAlign.Start,
+                            fontSize = 25.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = Util.quicksand
+                        )
+
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 20.dp, bottom = 10.dp),
+                            contentPadding = PaddingValues(start = 10.dp, end = 10.dp)
+
                         ) {
+                            itemsIndexed(listOfChips) { index, it ->
 
-                            navHostController.currentBackStackEntry?.savedStateHandle?.set("tvId",item.id.toString())
+                                ProviderChip(
+                                    it,
+                                    chipSelected = it == selected,
+                                    onChipSelected = {
 
-                            navHostController.navigate(NavScreens.TvDetails.route)
+                                        selected = it
+                                        selectedID = listOfChipsIds[index]
+                                        page = 1
+                                        viewModel.category = it
+
+                                    }, modifier = Modifier
+                                        .padding(4.dp)
+                                        .clip(RoundedCornerShape(30.dp))
+                                )
+                            }
                         }
                     }
-
                 }
 
-//                item {
-//
-//                    Box(modifier = Modifier){
-//
-//                        Button(onClick = { /*TODO*/ }) {
-//
-//                            Text(text = )
-//
-//                        }
-//
-//                    }
-//
-//                }
-
             }
-
-        }
-
-        Surface(color = Color.Black.copy(alpha = 0.6f)) {
-
-            Column() {
-
-                Text(
-                    text = "Tv Shows.", modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, top = 35.dp),
-                    textAlign = TextAlign.Start,
-                    fontSize = 25.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = Util.quicksand
-                )
-
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp, bottom = 10.dp),
-                    contentPadding = PaddingValues(start = 10.dp, end = 10.dp)
-
-                ) {
-                    itemsIndexed(listOfChips) { index, it ->
-
-                        ProviderChip(
-                            it,
-                            chipSelected = it == selected,
-                            onChipSelected = {
-
-                                selected = it
-                                selectedID = listOfChipsIds[index]
-                                page = 1
-
-                            }, modifier = Modifier
-                                .padding(4.dp)
-                                .clip(RoundedCornerShape(30.dp))
-                        )
-                    }
-                }
-            }
-        }
-
-        LaunchedEffect(loadMore) {
-
-            Log.d(TAG, "TvShows: $loadMore")
-
-            if (loadMore) {
-            }
-
-            loadMore = false
-
         }
     }
 }

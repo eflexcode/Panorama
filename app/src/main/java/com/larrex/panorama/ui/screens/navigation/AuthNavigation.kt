@@ -18,7 +18,7 @@ fun AuthNavigation(navHostController: NavHostController, application: Applicatio
         }
         composable("home") {
 
-            MainScreen()
+            MainScreen(application)
         }
 
     }

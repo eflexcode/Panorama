@@ -23,10 +23,10 @@ interface Repository {
     fun getCategoryTv(): Flow<Category?>
     fun getMoviesWithGenres(id: String): Flow<Movies?>
     fun getTvWithGenres(id: String): Flow<Movies?>
-    fun getTvWithNetwork(id: String,page :String): Flow<Movies?>
+    fun getTvWithNetwork(id: String, page: String): Flow<Movies?>
     fun getMovieDetails(id: String): Flow<MovieDetails?>
     fun getMovieCredits(id: String): Flow<Credits?>
-     fun getTvDetails(id: String): Flow<TvDetails?>
-     fun getTvCredits(id: String): Flow<CreditsTv?>
+    fun getTvDetails(id: String): Flow<TvDetails?>
+    fun getTvCredits(id: String): Flow<CreditsTv?>
 
 }

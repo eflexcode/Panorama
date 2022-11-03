@@ -1,5 +1,10 @@
 package com.larrex.panorama.ui.screens.component
 
+import android.content.Context
+import android.graphics.Point
+import android.util.DisplayMetrics
+import android.util.Log
+import android.view.WindowManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -36,13 +41,36 @@ import com.larrex.panorama.Util
 import com.skydoves.landscapist.glide.GlideImage
 import kotlin.math.absoluteValue
 
+private const val TAG = "TrendingItem"
+
 @Composable
-fun TrendingItem(imageUrl: String, name: String, description: String, onClick: () -> Unit) {
+fun TrendingItem(
+    imageUrl: String,
+    name: String,
+    description: String,
+    context: Context,
+    onClick: () -> Unit
+) {
 
     val colors = listOf<Color>(Color.White, Color.Black)
+
+
+    val windowManager: WindowManager =
+        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+    val display = windowManager.defaultDisplay
+
+    val displayMetrics = DisplayMetrics()
+    display.getMetrics(displayMetrics)
+
+    val width = displayMetrics.widthPixels
+
+    val realWidth = width / displayMetrics.density
+
+//    Log.d(TAG, "TrendingItem: $realWidth")
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .width(realWidth.dp)
             .background(Color.Black)
             .height(450.dp), contentAlignment = Alignment.BottomCenter
     ) {
@@ -108,7 +136,6 @@ fun TrendingItem(imageUrl: String, name: String, description: String, onClick: (
 
             }
         }
-
 
     }
 

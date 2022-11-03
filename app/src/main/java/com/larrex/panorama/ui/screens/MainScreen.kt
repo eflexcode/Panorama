@@ -1,5 +1,6 @@
 package com.larrex.panorama.ui.screens
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -26,7 +27,7 @@ private const val TAG = "MainScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(application: Application) {
 
     val uiControl = rememberSystemUiController()
     val navController = rememberNavController()
@@ -43,9 +44,6 @@ fun MainScreen() {
             .fillMaxSize()
             .background(Color.White), contentAlignment = Alignment.Center
     ) {
-
-//
-
 
         Scaffold(bottomBar = {
             CustomBottomNav(
@@ -68,7 +66,7 @@ fun MainScreen() {
             }
         }) {
             it
-            BottomNavGraph(navHostController = navController)
+            BottomNavGraph(navHostController = navController, application = application)
         }
 
 

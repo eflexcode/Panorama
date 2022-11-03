@@ -1,11 +1,16 @@
 package com.larrex.panorama.ui.screens
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,10 +42,8 @@ private const val TAG = "Movie"
 
 @OptIn(ExperimentalSnapperApi::class, ExperimentalPagerApi::class)
 @Composable
-fun Movies(navController: NavController) {
+fun Movies(navController: NavController, application: Application) {
     val viewModel = hiltViewModel<MainViewModel>()
-
-    val movies: MutableList<Movies?> = ArrayList<Movies?>()
 
     val trending by viewModel.getTrending().collectAsState(initial = null)
     val category by viewModel.getCategory().collectAsState(initial = null)
@@ -51,17 +54,9 @@ fun Movies(navController: NavController) {
 
     val list: MutableList<Int> = ArrayList<Int>()
 
-    category?.genres?.forEach {
-
-        val movie by viewModel.getMoviesWithGenres(it.id.toString()).collectAsState(initial = null)
-
-        movies.add(movie)
-    }
-
     val state = rememberLazyListState()
     val behavior = rememberSnapperFlingBehavior(state)
 
-//    state.layoutInfo.visibleItemsInfo.last().index
 
     val uiControl = rememberSystemUiController()
 
@@ -69,14 +64,27 @@ fun Movies(navController: NavController) {
 
     val selected by remember { derivedStateOf { state.layoutInfo.visibleItemsInfo.lastIndex + state.firstVisibleItemIndex } }
 
-    Box(
-        modifier = Modifier
-            .background(Color.Black)
-            .fillMaxSize()
-    ) {
-        LazyColumn(contentPadding = PaddingValues(bottom = 70.dp)) {
+    if (category == null) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .background(Color.Black)
+                .fillMaxSize()
+        ) {
 
-            item {
+            CircularProgressIndicator(color = Color.White)
+
+        }
+    } else {
+
+        Box(
+            modifier = Modifier
+                .background(Color.Black)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+        ) {
+
+            Column(Modifier.padding(bottom = 70.dp)) {
 
                 Column(
                     verticalArrangement = Arrangement.Center,
@@ -98,7 +106,9 @@ fun Movies(navController: NavController) {
                                     it.overview?.let { it2 ->
                                         TrendingItem(
                                             imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
-                                            it1, it2
+                                            it1,
+                                            it2,
+                                            application
                                         ) {
 
                                             Log.d(TAG, "Movies: " + list)
@@ -107,42 +117,56 @@ fun Movies(navController: NavController) {
                                         }
                                     }
                                 }
-
                             }
                         }
                     }
 
                     LazyRow() {
+                        if (trending != null) {
 
-                        items(13) {
+                            itemsIndexed(trending!!.results) { index, it ->
 
-                            TrendingIndicator(state.firstVisibleItemIndex == it)
+//                            Log.d(TAG, "Movies: " + state.layoutInfo.visibleItemsInfo[0].index)
 
+//                            if (state != null)
+//
+                                if (state.layoutInfo.visibleItemsInfo.size > 0) {
+
+                                    val selected by remember { derivedStateOf { state.layoutInfo.visibleItemsInfo[0].index == index } }
+                                    TrendingIndicator(selected)
+                                }
+                            }
                         }
 
                     }
 
                 }
 
-            }
 
-            category?.let {
-                itemsIndexed(it.genres) { index, item ->
+                category?.genres?.forEach { item ->
+                        val movies by viewModel.getMoviesWithGenres(item.id.toString()).collectAsState(initial = null)
 
-                    item.name?.let { it1 ->
-                        item.id?.let { it2 ->
-                            CategoryItem(
-                                it1, false,navController,
-                                movies[index]
-                            )
-                        }
-                    }
-
+                    CategoryItem(
+                        item.name.toString(), false, navController, movies
+                    )
                 }
+
+
             }
+//            category?.let {
+//                itemsIndexed(it.genres) { index, item ->
+//
+//                    item.name?.let { it1 ->
+//                        item.id?.let { it2 ->
+//
+//                        }
+//                    }
+//
+//                }
+//            }
         }
-
     }
+
 }
 
 

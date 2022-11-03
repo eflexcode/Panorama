@@ -4,11 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,29 +26,15 @@ import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.Results
 import com.larrex.panorama.ui.screens.navigation.NavScreens
 import com.larrex.panorama.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @Composable
 fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController, movies: Movies?) {
-
-    val viewModel = hiltViewModel<MainViewModel>()
-
-
-//    CoroutineScope(Dispatchers.IO).launch {
-//
-//    }
-
-//    val movies by viewModel.getMoviesWithGenres(id).collectAsState(initial = null)
-//    var movies : Movies? = null
-
-    LaunchedEffect(Unit) {
-
-//        val movies2 = viewModel.getMoviesWithGenres(id).collectLatest { item ->
-////            movies = item
-//        }
-
-    }
-
 
     Box(
         modifier = Modifier
@@ -90,17 +76,35 @@ fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController
 
             }
 
-            LazyRow(contentPadding = PaddingValues(start = 15.dp, end = 30.dp)) {
+            if (movies == null) {
 
-                movies?.let {
-                    items(it.results, contentType = { Results() }) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .background(Color.Black)
+                        .fillMaxWidth()
+                        .height(203.dp)
+                ) {
+
+                    CircularProgressIndicator(color = Color.White)
+
+                }
+
+            } else {
+
+                LazyRow(contentPadding = PaddingValues(start = 15.dp, end = 30.dp)) {
+
+                    items(movies.results, contentType = { Results() }) {
 
                         MovieItem(
                             tv = tv,
                             imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
                         ) {
                             if (tv) {
-                                navController.currentBackStackEntry?.savedStateHandle?.set("tvId",it.id.toString())
+                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                    "tvId",
+                                    it.id.toString()
+                                )
 
                                 navController.navigate(NavScreens.TvDetails.route)
                             } else {
@@ -114,10 +118,10 @@ fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController
                         }
 
                     }
+
                 }
 
             }
-
         }
 
     }
