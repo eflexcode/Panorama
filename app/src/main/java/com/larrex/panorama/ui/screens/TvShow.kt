@@ -13,9 +13,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +32,7 @@ import com.larrex.panorama.ui.screens.component.CategoryItem
 import com.larrex.panorama.ui.screens.component.MovieItem
 import com.larrex.panorama.ui.screens.component.ProviderChip
 import com.larrex.panorama.ui.screens.navigation.NavScreens
+import com.larrex.panorama.ui.theme.Green
 import com.larrex.panorama.ui.viewmodel.MainViewModel
 
 private const val TAG = "TvShow"
@@ -133,10 +132,9 @@ fun TvShows(navHostController: NavHostController) {
 
                 Column {
 
-
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
-                        contentPadding = PaddingValues(bottom = 70.dp, top = 150.dp)
+                        contentPadding = PaddingValues(bottom = 0.dp, top = 150.dp)
                     ) {
 
                         networkShows?.let {
@@ -167,55 +165,77 @@ fun TvShows(navHostController: NavHostController) {
                             }
                         }
 
+                        item {
+
+                            Button(
+                                onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+                                    Green
+                                )
+                            ) {
+
+                                Text(text = "Load more", color = Color.Black)
+
+                            }
+                        }
+
                     }
 
-                }
-
-                Surface(color = Color.Black.copy(alpha = 0.6f)) {
-
-                    Column() {
-
-                        Text(
-                            text = "Tv Shows.", modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 20.dp, top = 35.dp),
-                            textAlign = TextAlign.Start,
-                            fontSize = 25.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = Util.quicksand
+                    Button(
+                        onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+                            Green
                         )
+                    ) {
 
-                        LazyRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 20.dp, bottom = 10.dp),
-                            contentPadding = PaddingValues(start = 10.dp, end = 10.dp)
+                        Text(text = "More", color = Color.Black)
+                    }
+                }
+            }
 
-                        ) {
-                            itemsIndexed(listOfChips) { index, it ->
+            Surface(color = Color.Black.copy(alpha = 0.6f)) {
 
-                                ProviderChip(
-                                    it,
-                                    chipSelected = it == selected,
-                                    onChipSelected = {
+                Column() {
 
-                                        selected = it
-                                        selectedID = listOfChipsIds[index]
-                                        page = 1
-                                        viewModel.category = it
+                    Text(
+                        text = "Tv Shows.", modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, top = 35.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 25.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Util.quicksand
+                    )
 
-                                    }, modifier = Modifier
-                                        .padding(4.dp)
-                                        .clip(RoundedCornerShape(30.dp))
-                                )
-                            }
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 20.dp, bottom = 10.dp),
+                        contentPadding = PaddingValues(start = 10.dp, end = 10.dp)
+
+                    ) {
+                        itemsIndexed(listOfChips) { index, it ->
+
+                            ProviderChip(
+                                it,
+                                chipSelected = it == selected,
+                                onChipSelected = {
+
+                                    selected = it
+                                    selectedID = listOfChipsIds[index]
+                                    page = 1
+                                    viewModel.category = it
+
+                                }, modifier = Modifier
+                                    .padding(4.dp)
+                                    .clip(RoundedCornerShape(30.dp))
+                            )
                         }
                     }
                 }
-
             }
+
         }
     }
 }
+
 
