@@ -108,19 +108,20 @@ fun TvShows(navHostController: NavHostController) {
                 ) {
 
                     categoryTv?.genres?.forEach {
-                        val movie by viewModel.getTvWithGenres(it.id.toString())
+                        val movie by viewModel.getTvWithGenres(it.id.toString(),"1")
                             .collectAsState(initial = null)
                         it.name?.let { it1 ->
-                            CategoryItem(
-                                it1, true, navHostController,
-                                movie
-                            )
+                            it.id?.let { it2 ->
+                                CategoryItem(
+                                    it1, true, navHostController,
+                                    movie, it2
+                                )
+                            }
                         }
                     }
                 }
-            } else {
 
-                val tv: MutableList<Results?> = ArrayList<Results?>()
+            } else {
 
                 viewModel.tvMovieList.clear()
 

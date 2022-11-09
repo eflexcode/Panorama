@@ -49,6 +49,14 @@ fun BottomNavGraph(navHostController: NavHostController,application: Application
                 TvDetails(id)
             }
         }
+        composable(NavScreens.MovieDetails.route) {
+
+            val type = navHostController.previousBackStackEntry?.savedStateHandle?.get<CategoryType>("type")
+
+            if (type != null) {
+                MovieGenre(navHostController,type)
+            }
+        }
 
     }
 

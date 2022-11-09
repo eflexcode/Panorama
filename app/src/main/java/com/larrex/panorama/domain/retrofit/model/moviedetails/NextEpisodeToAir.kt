@@ -9,10 +9,10 @@ data class NextEpisodeToAir(
     @SerializedName("name") var name: String? = null,
     @SerializedName("overview") var overview: String? = null,
     @SerializedName("production_code") var productionCode: String? = null,
-    @SerializedName("runtime") var runtime: Int? = null,
-    @SerializedName("season_number") var seasonNumber: Int? = null,
-    @SerializedName("show_id") var showId: Int? = null,
+    @SerializedName("runtime") var runtime: Float? = null,
+    @SerializedName("season_number") var seasonNumber: Float? = null,
+    @SerializedName("show_id") var showId: Float? = null,
     @SerializedName("still_path") var stillPath: String? = null,
-    @SerializedName("vote_average") var voteAverage: Int? = null,
-    @SerializedName("vote_count") var voteCount: Int? = null
+    @SerializedName("vote_average") var voteAverage: Float? = null,
+    @SerializedName("vote_count") var voteCount: Float? = null
 )

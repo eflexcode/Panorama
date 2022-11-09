@@ -21,8 +21,8 @@ interface Repository {
     fun getTrending(): Flow<Movies?>
     fun getCategory(): Flow<Category?>
     fun getCategoryTv(): Flow<Category?>
-    fun getMoviesWithGenres(id: String): Flow<Movies?>
-    fun getTvWithGenres(id: String): Flow<Movies?>
+    fun getMoviesWithGenres(id: String,page: String): Flow<Movies?>
+    fun getTvWithGenres(id: String,page: String): Flow<Movies?>
     fun getTvWithNetwork(id: String, page: String): Flow<Movies?>
     fun getMovieDetails(id: String): Flow<MovieDetails?>
     fun getMovieCredits(id: String): Flow<Credits?>

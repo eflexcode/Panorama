@@ -189,11 +189,11 @@ class RepositoryImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getMoviesWithGenres(id: String): Flow<Movies?> {
+    override fun getMoviesWithGenres(id: String, page: String): Flow<Movies?> {
 
         return flow<Movies?> {
 
-            val movies = apiClient.getMoviesWithGenres(id).execute()
+            val movies = apiClient.getMoviesWithGenres(id,page).execute()
 
             if (movies.isSuccessful) {
 
@@ -205,11 +205,11 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-    override fun getTvWithGenres(id: String): Flow<Movies?> {
+    override fun getTvWithGenres(id: String,page: String): Flow<Movies?> {
 
         return flow<Movies?> {
 
-            val tv = apiClient.getTvWithGenres(id).execute()
+            val tv = apiClient.getTvWithGenres(id,page).execute()
 
             if (tv.isSuccessful) {
 

@@ -25,10 +25,16 @@ interface ApiClient {
     fun getCategoryTv(): Call<Category>
 
     @GET("discover/movie?api_key=" + Util.API_KEY)
-    fun getMoviesWithGenres(@Query("with_genres") id: String): Call<Movies>
+    fun getMoviesWithGenres(
+        @Query("with_genres") id: String,
+        @Query("page") page: String
+    ): Call<Movies>
 
     @GET("discover/tv?api_key=" + Util.API_KEY + "&sort_by=popularity.desc")
-    fun getTvWithGenres(@Query("with_genres") id: String): Call<Movies>
+    fun getTvWithGenres(
+        @Query("with_genres") id: String,
+        @Query("page") page: String
+    ): Call<Movies>
 
     @GET("discover/tv?api_key=" + Util.API_KEY)
     fun getTvWithNetwork(

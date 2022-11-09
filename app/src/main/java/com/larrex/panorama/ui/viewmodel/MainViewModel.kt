@@ -42,9 +42,34 @@ class MainViewModel @Inject constructor(
     }
 
     val tvMovieList = mutableStateListOf<Results>()
-    var page = 1
 
-    var category = "Any"
+    val tvMovieWithGenreList = mutableStateListOf<Results>()
+
+    fun getPageWithGenre(newPage: String, id: String,tv:Boolean) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            if (tv){
+                repository.getTvWithGenres(id, newPage).collectLatest {
+
+                    if (it != null) {
+                        tvMovieWithGenreList.addAll(it.results)
+                    }
+                }
+            }else{
+                repository.getMoviesWithGenres(id, newPage).collectLatest {
+
+                    if (it != null) {
+                        tvMovieWithGenreList.addAll(it.results)
+                    }
+                }
+            }
+
+
+
+        }
+
+    }
 
     fun authState(): Flow<Boolean> {
 
@@ -75,30 +100,33 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun getMoviesWithGenres(id: String): Flow<Movies?> {
+    fun getMoviesWithGenres(id: String, page: String): Flow<Movies?> {
 
-        return repository.getMoviesWithGenres(id)
+        return repository.getMoviesWithGenres(id,page)
 
     }
 
-    fun getTvWithGenres(id: String): Flow<Movies?> {
+    fun getTvWithGenres(id: String,page: String): Flow<Movies?> {
 
-        return repository.getTvWithGenres(id)
+        return repository.getTvWithGenres(id,page)
 
     }
 
     fun getPage(newPage: String, id: String) {
+
         Log.d(TAG, "getPage: $newPage")
         Log.d(TAG, "getPage: $id")
+
         CoroutineScope(Dispatchers.IO).launch {
 
             repository.getTvWithNetwork(id, newPage).collectLatest {
 
                 if (it != null) {
                     tvMovieList.addAll(it.results)
-                    Log.d(TAG, "getPage: "+tvMovieList.size)
+                    Log.d(TAG, "getPage: " + tvMovieList.size)
                 }
             }
+
         }
 
     }

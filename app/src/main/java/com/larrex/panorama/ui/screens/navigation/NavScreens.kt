@@ -9,5 +9,6 @@ sealed class NavScreens(val route: String) {
     object Profile : NavScreens("Profile")
     object MovieDetails : NavScreens("MovieDetails")
     object TvDetails : NavScreens("TvDetails")
+    object MovieGenre : NavScreens("MovieGenre")
 
 }

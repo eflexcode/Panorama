@@ -53,7 +53,7 @@ fun CastItem(imageUrl: String, name: String, onClick: () -> Unit) {
     )
 
     Column(
-        modifier = Modifier.width(120.dp),
+        modifier = Modifier.width(80.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -61,8 +61,8 @@ fun CastItem(imageUrl: String, name: String, onClick: () -> Unit) {
         com.skydoves.landscapist.glide.GlideImage(
             imageModel = { imageUrl },
             modifier = Modifier
-                .width(110.dp)
-                .height(80.dp)
+                .width(80.dp)
+                .height(100.dp)
                 .padding(3.dp)
                 .clip(RoundedCornerShape(10.dp)), component = imageComponent {
 
@@ -85,7 +85,6 @@ fun CastItem(imageUrl: String, name: String, onClick: () -> Unit) {
             fontFamily = Util.quicksand,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
-
 
         )
 

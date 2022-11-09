@@ -148,14 +148,15 @@ fun Movies(navController: NavController, application: Application) {
 
                     }
 
-
                     category?.genres?.forEach { item ->
-                        val movies by viewModel.getMoviesWithGenres(item.id.toString())
+                        val movies by viewModel.getMoviesWithGenres(item.id.toString(),"1")
                             .collectAsState(initial = null)
 
-                        CategoryItem(
-                            item.name.toString(), false, navController, movies
-                        )
+                        item.id?.let {
+                            CategoryItem(
+                                item.name.toString(), false, navController, movies, it
+                            )
+                        }
                     }
 
 

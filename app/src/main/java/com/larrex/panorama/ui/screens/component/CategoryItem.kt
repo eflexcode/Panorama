@@ -24,6 +24,7 @@ import com.larrex.panorama.Util
 import com.larrex.panorama.R
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.Results
+import com.larrex.panorama.ui.screens.navigation.CategoryType
 import com.larrex.panorama.ui.screens.navigation.NavScreens
 import com.larrex.panorama.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
-fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController, movies: Movies?) {
+fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController, movies: Movies?,id:Int) {
+
+    val type = CategoryType(id, categoryName,tv)
 
     Box(
         modifier = Modifier
@@ -64,7 +67,12 @@ fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController
 
                     )
 
-                IconButton(onClick = { /*TODO*/ }, modifier = Modifier.weight(0.3f)) {
+                IconButton(onClick = {
+
+                        navController.currentBackStackEntry?.savedStateHandle?.set("type" , type)
+                        navController.navigate(NavScreens.MovieDetails.route)
+
+                }, modifier = Modifier.weight(0.3f)) {
 
                     Icon(
                         painter = painterResource(id = R.drawable.ic_more),
