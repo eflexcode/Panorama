@@ -171,7 +171,7 @@ fun TvDetails(id: String) {
                 Text(
                     text = tvDetails?.name + "",
                     textAlign = TextAlign.Start,
-                    fontSize = 35.sp,
+                    fontSize = 25.sp,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontFamily = Util.quicksand,

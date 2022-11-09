@@ -49,7 +49,7 @@ fun TvShows(navHostController: NavHostController) {
         "Hulu",
         "HBO Max",
         "Netflix",
-        "Google Play",
+        "Paramount+",
         "Show Max"
     )
 
@@ -62,21 +62,18 @@ fun TvShows(navHostController: NavHostController) {
         453,
         3186,
         213,
-        1102,
+        4330,
         2265
     )
+
+    var page = 1
 
     var selected by remember() {
         mutableStateOf("Any")
     }
-    var loadMore by remember() {
-        mutableStateOf(false)
-    }
+
     var selectedID by remember() {
         mutableStateOf(0)
-    }
-    var page by remember() {
-        mutableStateOf(1)
     }
 
     val viewModel = hiltViewModel<MainViewModel>()
@@ -125,69 +122,47 @@ fun TvShows(navHostController: NavHostController) {
 
                 val tv: MutableList<Results?> = ArrayList<Results?>()
 
-                val networkShows by viewModel.getTvWithNetwork(
-                    id = selectedID.toString(),
-                    page = page.toString()
-                ).collectAsState(initial = null)
+                viewModel.tvMovieList.clear()
 
                 Column {
 
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
-                        contentPadding = PaddingValues(bottom = 0.dp, top = 150.dp)
+                        contentPadding = PaddingValues(bottom = 70.dp, top = 150.dp)
                     ) {
 
-                        networkShows?.let {
-                            itemsIndexed(it.results) { index, item ->
 
-                                loadMore = tv.size - 1 == index
+                        itemsIndexed(viewModel.tvMovieList) { index, item ->
 
-                                if (tv.size - 1 == index) {
+                            if (viewModel.tvMovieList.size - 1 == index) {
+                                Log.d(
+                                    TAG,
+                                    "TvShows: " + index + " list size " + viewModel.tvMovieList.size
 
-                                    Log.d(TAG, "TvShows: $page")
+                                )
 
-                                    loadMore = false
+                                page+=1
 
-                                }
-                                MovieItem(
-                                    tv = false,
-                                    imageUrl = "https://image.tmdb.org/t/p/w780" + item.posterPath
-                                ) {
-
-                                    navHostController.currentBackStackEntry?.savedStateHandle?.set(
-                                        "tvId",
-                                        item.id.toString()
-                                    )
-
-                                    navHostController.navigate(NavScreens.TvDetails.route)
-                                }
+                                viewModel.getPage(page.toString(), selectedID.toString())
 
                             }
-                        }
 
-                        item {
-
-                            Button(
-                                onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
-                                    Green
-                                )
+                            MovieItem(
+                                tv = false,
+                                imageUrl = "https://image.tmdb.org/t/p/w780" + item.posterPath
                             ) {
 
-                                Text(text = "Load more", color = Color.Black)
+                                navHostController.currentBackStackEntry?.savedStateHandle?.set(
+                                    "tvId",
+                                    item.id.toString()
+                                )
 
+                                navHostController.navigate(NavScreens.TvDetails.route)
                             }
+
                         }
-
                     }
 
-                    Button(
-                        onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
-                            Green
-                        )
-                    ) {
-
-                        Text(text = "More", color = Color.Black)
-                    }
                 }
             }
 
@@ -222,8 +197,9 @@ fun TvShows(navHostController: NavHostController) {
 
                                     selected = it
                                     selectedID = listOfChipsIds[index]
-                                    page = 1
-                                    viewModel.category = it
+                                    viewModel.tvMovieList.clear()
+                                    viewModel.getPage("1", selectedID.toString())
+                                    page =1
 
                                 }, modifier = Modifier
                                     .padding(4.dp)

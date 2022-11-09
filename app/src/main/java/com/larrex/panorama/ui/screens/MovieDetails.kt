@@ -58,219 +58,226 @@ fun MovieDetails(id: String) {
 
     Log.d(TAG, "MovieDetails: " + id)
 
-    val movieDetails by viewModel.getMovieDetails(id).collectAsState(initial = null)
-    val credits by viewModel.getMovieCredits(id).collectAsState(initial = null)
-    if (movieDetails != null) {
-        Box(
-            modifier = Modifier
-                .background(Color.Black)
-                .fillMaxSize()
-        ) {
+    Box(modifier = Modifier
+        .background(Color.Black)
+        .fillMaxSize()) {
 
-            Column(
+
+        val movieDetails by viewModel.getMovieDetails(id).collectAsState(initial = null)
+        val credits by viewModel.getMovieCredits(id).collectAsState(initial = null)
+        if (movieDetails != null) {
+            Box(
                 modifier = Modifier
+                    .background(Color.Black)
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
             ) {
 
-                Box(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Black)
-                        .height(450.dp), contentAlignment = Alignment.Center
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
                 ) {
 
-                    GlideImage(
-                        imageModel = { "https://image.tmdb.org/t/p/w780" + movieDetails?.posterPath },
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .drawWithCache {
-
-                                val gradient = Brush.verticalGradient(colors)
-
-                                onDrawWithContent {
-                                    drawContent()
-                                    drawRect(gradient, blendMode = BlendMode.Multiply)
-                                }
-
-                            },
-                    )
-
-                    IconButton(
-                        onClick = { /*TODO*/ }, modifier = Modifier
-                            .background(
-                                Color.Black.copy(0.6f),
-                                CircleShape
-                            )
-                            .size(70.dp)
+                            .fillMaxWidth()
+                            .background(Color.Black)
+                            .height(450.dp), contentAlignment = Alignment.Center
                     ) {
 
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_play),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
+                        GlideImage(
+                            imageModel = { "https://image.tmdb.org/t/p/w780" + movieDetails?.posterPath },
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .drawWithCache {
+
+                                    val gradient = Brush.verticalGradient(colors)
+
+                                    onDrawWithContent {
+                                        drawContent()
+                                        drawRect(gradient, blendMode = BlendMode.Multiply)
+                                    }
+
+                                },
                         )
+
+                        IconButton(
+                            onClick = { /*TODO*/ }, modifier = Modifier
+                                .background(
+                                    Color.Black.copy(0.6f),
+                                    CircleShape
+                                )
+                                .size(70.dp)
+                        ) {
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_play),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+
+                        }
 
                     }
 
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                )
-                {
-                    Surface(
-                        modifier = Modifier
-                            .padding(start = 20.dp)
-                            .clip(RoundedCornerShape(30.dp)),
-                        color = Green
-
-                    ) {
-
-                        Text(
-                            text = "TMDB",
-                            fontSize = 15.sp,
-                            fontStyle = FontStyle.Normal,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            fontFamily = Util.quicksand,
-                            modifier = Modifier.padding(
-                                top = 10.dp,
-                                end = 30.dp,
-                                start = 30.dp,
-                                bottom = 10.dp
-                            )
-                        )
-
-                    }
-
-                    Text(
-                        text = "Rating " + movieDetails?.voteAverage,
-                        fontSize = 16.sp,
-                        fontStyle = FontStyle.Normal,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Gray,
-                        fontFamily = Util.quicksand,
-                        modifier = Modifier.padding(start = 15.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     )
-                }
-
-                Text(
-                    text = movieDetails?.title + "",
-                    textAlign = TextAlign.Start,
-                    fontSize = 35.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = Util.quicksand,
-                    modifier = Modifier
-                        .padding(start = 20.dp, end = 5.dp, top = 5.dp, bottom = 0.dp)
-
-                )
-
-                FlowRow(
-                    modifier = Modifier.padding(
-                        start = 20.dp,
-                        end = 10.dp,
-                        top = 10.dp,
-                        bottom = 10.dp
-                    )
-                ) {
-
-                    movieDetails?.genres?.forEach {
-
+                    {
                         Surface(
                             modifier = Modifier
-                                .padding(end = 3.dp, start = 3.dp, top = 3.dp, bottom = 3.dp)
+                                .padding(start = 20.dp)
                                 .clip(RoundedCornerShape(30.dp)),
-                            color = ChipBackground
+                            color = Green
 
                         ) {
 
                             Text(
-                                text = it.name + "",
+                                text = "TMDB",
                                 fontSize = 15.sp,
                                 fontStyle = FontStyle.Normal,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Gray,
+                                color = Color.Black,
                                 fontFamily = Util.quicksand,
                                 modifier = Modifier.padding(
                                     top = 10.dp,
-                                    end = 20.dp,
-                                    start = 20.dp,
+                                    end = 30.dp,
+                                    start = 30.dp,
                                     bottom = 10.dp
                                 )
                             )
 
                         }
+
+                        Text(
+                            text = "Rating " + movieDetails?.voteAverage,
+                            fontSize = 16.sp,
+                            fontStyle = FontStyle.Normal,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Gray,
+                            fontFamily = Util.quicksand,
+                            modifier = Modifier.padding(start = 15.dp)
+                        )
                     }
 
-                }
+                    Text(
+                        text = movieDetails?.title + "",
+                        textAlign = TextAlign.Start,
+                        fontSize = 25.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Util.quicksand,
+                        modifier = Modifier
+                            .padding(start = 20.dp, end = 5.dp, top = 5.dp, bottom = 5.dp)
 
-                Text(
-                    text = movieDetails?.overview + "",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 40.dp, start = 20.dp, top = 0.dp),
-                    textAlign = TextAlign.Start,
-                    fontSize = 14.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = Util.quicksand
-
-                )
-
-                Text(
-                    text = "Cast",
-                    textAlign = TextAlign.Start,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = Util.quicksand,
-                    modifier = Modifier
-                        .padding(start = 20.dp, end = 5.dp, top = 5.dp, bottom = 0.dp)
-
-                )
-
-                LazyRow(
-                    contentPadding = PaddingValues(
-                        start = 20.dp,
-                        end = 20.dp,
-                        top = 10.dp,
-                        bottom = 100.dp
                     )
-                ) {
 
-                    credits?.let {
-                        items(it.cast) {
+                    FlowRow(
+                        modifier = Modifier.padding(
+                            start = 20.dp,
+                            end = 10.dp,
+                            top = 10.dp,
+                            bottom = 10.dp
+                        )
+                    ) {
 
-                            CastItem(
-                                imageUrl = "https://image.tmdb.org/t/p/w780" + it.profilePath,
-                                name = it.name + ""
+                        movieDetails?.genres?.forEach {
+
+                            Surface(
+                                modifier = Modifier
+                                    .padding(end = 3.dp, start = 3.dp, top = 3.dp, bottom = 3.dp)
+                                    .clip(RoundedCornerShape(30.dp)),
+                                color = ChipBackground
+
                             ) {
 
-                            }
+                                Text(
+                                    text = it.name + "",
+                                    fontSize = 15.sp,
+                                    fontStyle = FontStyle.Normal,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Gray,
+                                    fontFamily = Util.quicksand,
+                                    modifier = Modifier.padding(
+                                        top = 10.dp,
+                                        end = 20.dp,
+                                        start = 20.dp,
+                                        bottom = 10.dp
+                                    )
+                                )
 
+                            }
                         }
+
                     }
 
+                    Text(
+                        text = movieDetails?.overview + "",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 40.dp, start = 20.dp, top = 0.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = Util.quicksand
+
+                    )
+
+                    Text(
+                        text = "Cast",
+                        textAlign = TextAlign.Start,
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Util.quicksand,
+                        modifier = Modifier
+                            .padding(start = 20.dp, end = 5.dp, top = 5.dp, bottom = 0.dp)
+
+                    )
+
+                    LazyRow(
+                        contentPadding = PaddingValues(
+                            start = 20.dp,
+                            end = 20.dp,
+                            top = 10.dp,
+                            bottom = 100.dp
+                        )
+                    ) {
+
+                        credits?.let {
+                            items(it.cast) {
+
+                                CastItem(
+                                    imageUrl = "https://image.tmdb.org/t/p/w780" + it.profilePath,
+                                    name = it.name + ""
+                                ) {
+
+                                }
+
+                            }
+                        }
+
+
+                    }
 
                 }
 
             }
+        } else {
+            Box(
+                contentAlignment = Alignment.Center, modifier = Modifier
+                    .background(Color.Black)
+                    .fillMaxSize()
+            ) {
 
-        }
-    } else {
-        Box(contentAlignment = Alignment.Center,modifier = Modifier
-            .background(Color.Black)
-            .fillMaxSize()) {
+                CircularProgressIndicator(color = Color.White)
 
-            CircularProgressIndicator(color = Color.White)
-
+            }
         }
     }
-
 }
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 800)

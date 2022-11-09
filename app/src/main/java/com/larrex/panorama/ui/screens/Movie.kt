@@ -43,6 +43,7 @@ private const val TAG = "Movie"
 @OptIn(ExperimentalSnapperApi::class, ExperimentalPagerApi::class)
 @Composable
 fun Movies(navController: NavController, application: Application) {
+
     val viewModel = hiltViewModel<MainViewModel>()
 
     val trending by viewModel.getTrending().collectAsState(initial = null)
@@ -57,102 +58,108 @@ fun Movies(navController: NavController, application: Application) {
     val state = rememberLazyListState()
     val behavior = rememberSnapperFlingBehavior(state)
 
-
     val uiControl = rememberSystemUiController()
 
     uiControl.setSystemBarsColor(Color.Black)
 
     val selected by remember { derivedStateOf { state.layoutInfo.visibleItemsInfo.lastIndex + state.firstVisibleItemIndex } }
 
-    if (category == null) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .background(Color.Black)
-                .fillMaxSize()
-        ) {
+    Box(
+        modifier = Modifier
+            .background(Color.Black)
+            .fillMaxSize()
+    ) {
 
-            CircularProgressIndicator(color = Color.White)
+        if (category == null) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .background(Color.Black)
+                    .fillMaxSize()
+            ) {
 
-        }
-    } else {
+                CircularProgressIndicator(color = Color.White)
 
-        Box(
-            modifier = Modifier
-                .background(Color.Black)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-        ) {
+            }
+        } else {
 
-            Column(Modifier.padding(bottom = 70.dp)) {
+            Box(
+                modifier = Modifier
+                    .background(Color.Black)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+            ) {
 
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                Column(Modifier.padding(bottom = 70.dp)) {
 
-                    LazyRow(
-                        modifier = Modifier, state, flingBehavior = behavior
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        if (trending != null) {
+                        LazyRow(
+                            modifier = Modifier, state, flingBehavior = behavior
+                        ) {
 
-                            itemsIndexed(trending!!.results) { index, it ->
+                            if (trending != null) {
 
-                                currentIndicator += 1
+                                itemsIndexed(trending!!.results) { index, it ->
 
-                                it.title?.let { it1 ->
+                                    currentIndicator += 1
 
-                                    it.overview?.let { it2 ->
-                                        TrendingItem(
-                                            imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
-                                            it1,
-                                            it2,
-                                            application
-                                        ) {
+                                    it.title?.let { it1 ->
 
-                                            Log.d(TAG, "Movies: " + list)
-                                            Log.d(TAG, "Movies: " + trending!!.results.size)
+                                        it.overview?.let { it2 ->
+                                            TrendingItem(
+                                                imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
+                                                it1,
+                                                it2,
+                                                application
+                                            ) {
 
+                                                Log.d(TAG, "Movies: " + list)
+                                                Log.d(TAG, "Movies: " + trending!!.results.size)
+
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    LazyRow() {
-                        if (trending != null) {
+                        LazyRow() {
+                            if (trending != null) {
 
-                            itemsIndexed(trending!!.results) { index, it ->
+                                itemsIndexed(trending!!.results) { index, it ->
 
 //                            Log.d(TAG, "Movies: " + state.layoutInfo.visibleItemsInfo[0].index)
 
 //                            if (state != null)
 //
-                                if (state.layoutInfo.visibleItemsInfo.size > 0) {
+                                    if (state.layoutInfo.visibleItemsInfo.size > 0) {
 
-                                    val selected by remember { derivedStateOf { state.layoutInfo.visibleItemsInfo[0].index == index } }
-                                    TrendingIndicator(selected)
+                                        val selected by remember { derivedStateOf { state.layoutInfo.visibleItemsInfo[0].index == index } }
+                                        TrendingIndicator(selected)
+                                    }
                                 }
                             }
+
                         }
 
                     }
 
+
+                    category?.genres?.forEach { item ->
+                        val movies by viewModel.getMoviesWithGenres(item.id.toString())
+                            .collectAsState(initial = null)
+
+                        CategoryItem(
+                            item.name.toString(), false, navController, movies
+                        )
+                    }
+
+
                 }
-
-
-                category?.genres?.forEach { item ->
-                        val movies by viewModel.getMoviesWithGenres(item.id.toString()).collectAsState(initial = null)
-
-                    CategoryItem(
-                        item.name.toString(), false, navController, movies
-                    )
-                }
-
-
-            }
 //            category?.let {
 //                itemsIndexed(it.genres) { index, item ->
 //
@@ -164,9 +171,10 @@ fun Movies(navController: NavController, application: Application) {
 //
 //                }
 //            }
+            }
         }
-    }
 
+    }
 }
 
 

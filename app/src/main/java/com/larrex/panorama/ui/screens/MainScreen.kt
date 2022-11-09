@@ -44,7 +44,6 @@ fun MainScreen(application: Application) {
         uiControl.setSystemBarsColor(Color.White)
     }
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()

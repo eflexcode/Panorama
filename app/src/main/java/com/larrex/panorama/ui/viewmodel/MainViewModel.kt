@@ -2,6 +2,7 @@ package com.larrex.panorama.ui.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.AuthCredential
@@ -10,19 +11,27 @@ import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.repository.Repository
 import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
+import com.larrex.panorama.domain.retrofit.model.Results
 import com.larrex.panorama.domain.retrofit.model.moviedetails.Credits
 import com.larrex.panorama.domain.retrofit.model.moviedetails.CreditsTv
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
 import com.larrex.panorama.domain.retrofit.model.moviedetails.TvDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG = "MainViewModel"
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private var repository: Repository,private val savedStateHandle: SavedStateHandle) : ViewModel() {
+class MainViewModel @Inject constructor(
+    private var repository: Repository,
+    private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
     suspend fun doGoogleAuth(authCredential: AuthCredential?): Flow<Result> {
 
@@ -32,9 +41,8 @@ class MainViewModel @Inject constructor(private var repository: Repository,priva
 
     }
 
-//    init {
-//        getMoviesWithGenres()
-//    }
+    val tvMovieList = mutableStateListOf<Results>()
+    var page = 1
 
     var category = "Any"
 
@@ -69,7 +77,6 @@ class MainViewModel @Inject constructor(private var repository: Repository,priva
 
     fun getMoviesWithGenres(id: String): Flow<Movies?> {
 
-
         return repository.getMoviesWithGenres(id)
 
     }
@@ -80,9 +87,19 @@ class MainViewModel @Inject constructor(private var repository: Repository,priva
 
     }
 
-    fun getTvWithNetwork(id: String, page: String): Flow<Movies?> {
+    fun getPage(newPage: String, id: String) {
+        Log.d(TAG, "getPage: $newPage")
+        Log.d(TAG, "getPage: $id")
+        CoroutineScope(Dispatchers.IO).launch {
 
-        return repository.getTvWithNetwork(id, page)
+            repository.getTvWithNetwork(id, newPage).collectLatest {
+
+                if (it != null) {
+                    tvMovieList.addAll(it.results)
+                    Log.d(TAG, "getPage: "+tvMovieList.size)
+                }
+            }
+        }
 
     }
 
