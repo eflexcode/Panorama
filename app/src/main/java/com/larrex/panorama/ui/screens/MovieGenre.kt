@@ -28,6 +28,8 @@ import com.larrex.panorama.ui.screens.navigation.CategoryType
 import com.larrex.panorama.ui.screens.navigation.NavScreens
 import com.larrex.panorama.ui.viewmodel.MainViewModel
 
+private const val TAG = "MovieGenre"
+
 @Composable
 fun MovieGenre(navController: NavController, type: CategoryType) {
 
@@ -78,7 +80,6 @@ fun MovieGenre(navController: NavController, type: CategoryType) {
                 )
             }
 
-
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
                 contentPadding = PaddingValues(bottom = 70.dp, top = 0.dp)
@@ -90,6 +91,8 @@ fun MovieGenre(navController: NavController, type: CategoryType) {
                     if (viewModel.tvMovieWithGenreList.size - 1 == index) {
 
                         page+=1
+
+                        Log.d(TAG, "MovieGenre: $page")
 
                         viewModel.getPageWithGenre(page.toString(), type.id.toString(), type.tv)
 

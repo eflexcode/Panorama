@@ -64,7 +64,6 @@ fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController
                     fontWeight = FontWeight.Bold,
                     fontFamily = Util.quicksand,
                     maxLines = 2,
-
                     )
 
                 IconButton(onClick = {

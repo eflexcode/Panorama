@@ -41,32 +41,39 @@ class MainViewModel @Inject constructor(
 
     }
 
+    private var firstPage = 1
+
     val tvMovieList = mutableStateListOf<Results>()
 
     val tvMovieWithGenreList = mutableStateListOf<Results>()
 
-    fun getPageWithGenre(newPage: String, id: String,tv:Boolean) {
+    fun getPageWithGenre(newPage: String, id: String, tv: Boolean) {
 
-        CoroutineScope(Dispatchers.IO).launch {
+        Log.d(TAG, "getPageWithGenre: $newPage")
 
-            if (tv){
-                repository.getTvWithGenres(id, newPage).collectLatest {
+        if (firstPage == newPage.toInt()) {
 
-                    if (it != null) {
-                        tvMovieWithGenreList.addAll(it.results)
+            firstPage++
+
+            CoroutineScope(Dispatchers.IO).launch {
+
+                if (tv) {
+                    repository.getTvWithGenres(id, newPage).collectLatest {
+
+                        if (it != null) {
+                            tvMovieWithGenreList.addAll(it.results)
+                        }
+                    }
+                } else {
+                    repository.getMoviesWithGenres(id, newPage).collectLatest {
+
+                        if (it != null) {
+                            tvMovieWithGenreList.addAll(it.results)
+                        }
                     }
                 }
-            }else{
-                repository.getMoviesWithGenres(id, newPage).collectLatest {
 
-                    if (it != null) {
-                        tvMovieWithGenreList.addAll(it.results)
-                    }
-                }
             }
-
-
-
         }
 
     }
@@ -102,13 +109,13 @@ class MainViewModel @Inject constructor(
 
     fun getMoviesWithGenres(id: String, page: String): Flow<Movies?> {
 
-        return repository.getMoviesWithGenres(id,page)
+        return repository.getMoviesWithGenres(id, page)
 
     }
 
-    fun getTvWithGenres(id: String,page: String): Flow<Movies?> {
+    fun getTvWithGenres(id: String, page: String): Flow<Movies?> {
 
-        return repository.getTvWithGenres(id,page)
+        return repository.getTvWithGenres(id, page)
 
     }
 
