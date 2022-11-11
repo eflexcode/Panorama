@@ -31,7 +31,7 @@ fun BottomNavGraph(navHostController: NavHostController, application: Applicatio
             Search()
         }
         composable(NavScreens.Favorite.route) {
-            Favorite()
+            Favorite(navHostController)
         }
         composable(NavScreens.Profile.route) {
             Profile()

@@ -68,9 +68,11 @@ fun MovieDetails(id: String?) {
         animationSpec = tween(1000, 0, LinearEasing)
     )
 
-    Box(modifier = Modifier
-        .background(Color.Black)
-        .fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .background(Color.Black)
+            .fillMaxSize()
+    ) {
 
         val movieDetails by viewModel.getMovieDetails(id.toString()).collectAsState(initial = null)
         val credits by viewModel.getMovieCredits(id.toString()).collectAsState(initial = null)
@@ -178,6 +180,7 @@ fun MovieDetails(id: String?) {
                                 val firebaseId = System.currentTimeMillis().toString()
 
                                 val favouriteMovie = FavouriteMovie(
+                                    false,
                                     firebaseId = firebaseId,
                                     movieDetails!!.adult,
                                     movieDetails!!.backdropPath,
@@ -187,7 +190,7 @@ fun MovieDetails(id: String?) {
                                     movieDetails!!.originalTitle,
                                     movieDetails!!.overview,
                                     movieDetails!!.posterPath,
-                                    popularity =  movieDetails!!.popularity
+                                    popularity = movieDetails!!.popularity
                                 )
 
                                 viewModel.addToFavouriteMovies(favouriteMovie)

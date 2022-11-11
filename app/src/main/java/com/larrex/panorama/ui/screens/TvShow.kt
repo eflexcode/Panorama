@@ -150,7 +150,7 @@ fun TvShows(navHostController: NavHostController) {
 
                             MovieItem(
                                 tv = false,
-                                imageUrl = "https://image.tmdb.org/t/p/w780" + item.posterPath
+                                imageUrl = "https://image.tmdb.org/t/p/w342" + item.posterPath
                             ) {
 
                                 navHostController.currentBackStackEntry?.savedStateHandle?.set(

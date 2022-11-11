@@ -105,7 +105,7 @@ fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController
 
                         MovieItem(
                             tv = tv,
-                            imageUrl = "https://image.tmdb.org/t/p/w780" + it.posterPath,
+                            imageUrl = "https://image.tmdb.org/t/p/w342" + it.posterPath,
                         ) {
                             if (tv) {
                                 navController.currentBackStackEntry?.savedStateHandle?.set(

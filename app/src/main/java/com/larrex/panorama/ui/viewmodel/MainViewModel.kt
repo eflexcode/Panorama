@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.larrex.panorama.core.Result
 import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.model.User
@@ -53,6 +54,7 @@ class MainViewModel @Inject constructor(
     val tvMovieList = mutableStateListOf<Results>()
 
     val tvMovieWithGenreList = mutableStateListOf<Results>()
+    val favouriteMovies = mutableStateListOf<FavouriteMovie>()
 
     fun getPageWithGenre(newPage: String, id: String, tv: Boolean) {
 
@@ -196,6 +198,32 @@ class MainViewModel @Inject constructor(
 
             awaitClose { }
 
+        }
+
+    }
+
+    fun getLikedMovies() {
+
+        favouriteMovies.clear()
+
+        val collectionReference = firestore.collection("Favourites")
+            .document(auth.currentUser?.uid.toString())
+            .collection("MyFavourites").orderBy("firebaseId",Query.Direction.DESCENDING)
+
+        collectionReference.addSnapshotListener { value, e ->
+
+            if (value != null) {
+
+                for (document in value.documents) {
+
+                    val favouriteMovie = document.toObject(FavouriteMovie::class.java)
+
+                    if (favouriteMovie != null) {
+                        favouriteMovies.add(favouriteMovie)
+                    }
+
+                }
+            }
 
         }
 

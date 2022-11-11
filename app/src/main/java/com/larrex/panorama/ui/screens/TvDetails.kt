@@ -71,12 +71,13 @@ fun TvDetails(id: String) {
     val tvDetails by viewModel.getTvDetails(id).collectAsState(initial = null)
     val credits by viewModel.getTvCredits(id).collectAsState(initial = null)
 
-    var isFavourite by remember { mutableStateOf(false) }
+    val isFavourite by viewModel.checkIfIsAlreadyLiked(id).collectAsState(initial = null)
 
     val animatedColor = animateColorAsState(
-        targetValue = if (isFavourite) Green else ChipBackground,
+        targetValue = if (isFavourite == true) Green else ChipBackground,
         animationSpec = tween(1000, 0, LinearEasing)
     )
+
     if (tvDetails != null) {
 
         Box(
@@ -180,7 +181,7 @@ fun TvDetails(id: String) {
 
                             val firebaseId = System.currentTimeMillis().toString()
 
-                            val favouriteMovie = FavouriteMovie(
+                            val favouriteMovie = FavouriteMovie(true,
                                 firebaseId = firebaseId,
                                 tvDetails!!.adult,
                                 tvDetails!!.backdropPath,
@@ -195,7 +196,7 @@ fun TvDetails(id: String) {
                             )
 
                             viewModel.addToFavouriteMovies(favouriteMovie)
-                            isFavourite = true
+//                            isFavourite = true
                         },
                     ) {
 

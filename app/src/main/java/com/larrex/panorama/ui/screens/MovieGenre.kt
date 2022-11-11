@@ -45,7 +45,7 @@ fun MovieGenre(navController: NavController, type: CategoryType) {
     ) {
 
         Column(
-            modifier = Modifier.padding(top = 25.dp)
+            modifier = Modifier.padding(top = 30.dp)
         ) {
 
             Row(
@@ -100,7 +100,7 @@ fun MovieGenre(navController: NavController, type: CategoryType) {
 
                     MovieItem(
                         tv = type.tv,
-                        imageUrl = "https://image.tmdb.org/t/p/w780" + item.posterPath
+                        imageUrl = "https://image.tmdb.org/t/p/w342" + item.posterPath
                     ) {
 
                         if (type.tv) {
