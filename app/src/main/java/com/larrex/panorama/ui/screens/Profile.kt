@@ -1,15 +1,216 @@
 package com.larrex.panorama.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.auth.FirebaseAuth
+import com.larrex.panorama.R
+import com.larrex.panorama.Util
+import com.larrex.panorama.ui.theme.ChipBackground
+import com.larrex.panorama.ui.viewmodel.MainViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Profile() {
 
-    Box(modifier = Modifier.background(Color.Yellow).fillMaxSize())
+    val viewModel = hiltViewModel<MainViewModel>()
+
+    val user by viewModel.getUserDetails().collectAsState(initial = null)
+
+    val painter = rememberAsyncImagePainter(
+        model = user?.imageUrl,
+        placeholder = painterResource(id = R.drawable.gray),
+        error = painterResource(id = R.drawable.gray)
+    )
+
+    val name by remember { mutableStateOf(user?.name.toString()) }
+
+    var newText by remember { mutableStateOf(TextFieldValue(name)) }
+
+
+//    if (user != null) {
+//
+//        newText = user?.name?.let { TextFieldValue(it) }!!
+//
+//    }
+    Box(
+        modifier = Modifier
+            .background(Color.Black)
+            .fillMaxSize()
+    ) {
+
+        Column(
+            modifier = Modifier.padding(top = 0.dp)
+        ) {
+
+            Text(
+                text = "My Profile.", modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, top = 35.dp),
+                textAlign = TextAlign.Start,
+                fontSize = 25.sp,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontFamily = Util.quicksand
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 30.dp), contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(180.dp)
+                        .clip(CircleShape)
+                        .toggleable(
+                            value = true,
+                            enabled = true,
+                            role = null,
+                            onValueChange = {
+
+
+                            }), contentScale = ContentScale.Crop,
+                    alignment = Alignment.Center
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(95.dp)
+                    .padding(start = 20.dp, end = 20.dp, top = 20.dp)
+                    .background(ChipBackground, RoundedCornerShape(5.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    FirebaseAuth.getInstance().currentUser?.email?.let {
+                        Text(
+                            text = it, modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 20.dp),
+                            textAlign = TextAlign.Start,
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = Util.quicksand
+                        )
+                    }
+
+                    Text(
+                        text = "Email",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 12.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = Util.quicksand
+
+                    )
+                }
+
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(95.dp)
+                    .padding(start = 20.dp, end = 20.dp, top = 10.dp)
+                    .background(ChipBackground, RoundedCornerShape(5.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+//                    Text(
+//                        text = user?.name.toString(), modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(start = 20.dp, top = 4.dp),
+//                        textAlign = TextAlign.Start,
+//                        fontSize = 16.sp,
+//                        color = Color.White,
+//                        fontWeight = FontWeight.Bold,
+//                        fontFamily = Util.quicksand
+//                    )
+
+                    TextField(
+                        value = newText,
+                        onValueChange = { text ->
+                            newText = text
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth().height(55.dp),
+                        colors = TextFieldDefaults.textFieldColors(
+                            contentColorFor(backgroundColor = Color.Transparent),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            containerColor = Color.Transparent,
+                            placeholderColor = Color.Gray,
+                        ),
+                        singleLine = true,
+                        placeholder = { Text(text = "Enter name", color = Color.Gray) },
+                        textStyle = TextStyle.Default.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = Util.quicksand,
+                            fontSize = 16.sp
+                        )
+
+
+                    )
+
+                    Text(
+                        text = "Edit your name here",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 15.dp, top = 0.dp, bottom = 0.dp),
+                        textAlign = TextAlign.Start,
+                        fontSize = 12.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = Util.quicksand
+
+                    )
+                }
+
+            }
+
+        }
+
+    }
 
 }

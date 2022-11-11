@@ -90,6 +90,7 @@ class RepositoryImpl @Inject constructor(
                                 val id: String = auth.uid!!
                                 val name: String = authResult.result.user?.displayName!!
                                 val imageUrl: String = authResult.result.user?.photoUrl.toString()
+                                val emial: String = authResult.result.user!!.email.toString()
 
                                 val user = User(id, name, imageUrl)
 
