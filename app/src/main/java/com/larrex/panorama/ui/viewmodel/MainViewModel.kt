@@ -6,7 +6,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.larrex.panorama.core.Result
+import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.repository.Repository
 import com.larrex.panorama.domain.retrofit.model.Category
@@ -19,7 +22,9 @@ import com.larrex.panorama.domain.retrofit.model.moviedetails.TvDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -30,7 +35,9 @@ private const val TAG = "MainViewModel"
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private var repository: Repository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore,
 ) : ViewModel() {
 
     suspend fun doGoogleAuth(authCredential: AuthCredential?): Flow<Result> {
@@ -64,6 +71,7 @@ class MainViewModel @Inject constructor(
                             tvMovieWithGenreList.addAll(it.results)
                         }
                     }
+
                 } else {
                     repository.getMoviesWithGenres(id, newPage).collectLatest {
 
@@ -159,6 +167,37 @@ class MainViewModel @Inject constructor(
     fun getTvCredits(id: String): Flow<CreditsTv?> {
 
         return repository.getTvCredits(id)
+
+    }
+
+    fun addToFavouriteMovies(favouriteMovie: FavouriteMovie) {
+
+        repository.addToFavouriteMovies(favouriteMovie)
+    }
+
+    fun checkIfIsAlreadyLiked(id: String?): Flow<Boolean> {
+
+        return callbackFlow {
+
+            val documentReference = id?.let {
+                firestore.collection("Favourites")
+                    .document(auth.currentUser?.uid.toString())
+                    .collection("MyFavourites")
+                    .document(it)
+            }
+
+            documentReference?.addSnapshotListener { value, e ->
+
+                if (value != null) {
+                    trySend(value.exists())
+                }
+
+            }
+
+            awaitClose { }
+
+
+        }
 
     }
 

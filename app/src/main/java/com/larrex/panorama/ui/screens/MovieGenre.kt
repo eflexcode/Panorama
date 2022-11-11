@@ -99,16 +99,25 @@ fun MovieGenre(navController: NavController, type: CategoryType) {
                     }
 
                     MovieItem(
-                        tv = false,
+                        tv = type.tv,
                         imageUrl = "https://image.tmdb.org/t/p/w780" + item.posterPath
                     ) {
 
-                        navController.currentBackStackEntry?.savedStateHandle?.set(
-                            "tvId",
-                            item.id.toString()
-                        )
+                        if (type.tv) {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                "tvId",
+                                item.id.toString()
+                            )
 
-                        navController.navigate(NavScreens.TvDetails.route)
+                            navController.navigate(NavScreens.TvDetails.route)
+                        } else {
+
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                "movieId",
+                                item.id.toString()
+                            )
+                            navController.navigate(NavScreens.MovieDetails.route)
+                        }
                     }
 
                 }

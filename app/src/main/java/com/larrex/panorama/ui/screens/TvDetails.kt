@@ -1,7 +1,9 @@
 package com.larrex.panorama.ui.screens
 
-import androidx.compose.runtime.Composable
 import android.util.Log
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,8 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -36,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowRow
 import com.larrex.panorama.R
 import com.larrex.panorama.Util
+import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
 import com.larrex.panorama.ui.screens.component.CastItem
@@ -64,12 +66,17 @@ fun TvDetails(id: String) {
     val state = rememberLazyListState()
     val behavior = rememberSnapperFlingBehavior(state)
 
-    Log.d(TAG, "MovieDetails: " + id)
+    Log.d(TAG, "TvDetails: " + id)
 
     val tvDetails by viewModel.getTvDetails(id).collectAsState(initial = null)
     val credits by viewModel.getTvCredits(id).collectAsState(initial = null)
 
+    var isFavourite by remember { mutableStateOf(false) }
 
+    val animatedColor = animateColorAsState(
+        targetValue = if (isFavourite) Green else ChipBackground,
+        animationSpec = tween(1000, 0, LinearEasing)
+    )
     if (tvDetails != null) {
 
         Box(
@@ -166,6 +173,43 @@ fun TvDetails(id: String) {
                         fontFamily = Util.quicksand,
                         modifier = Modifier.padding(start = 15.dp)
                     )
+
+                    IconButton(
+                        onClick = {
+
+
+                            val firebaseId = System.currentTimeMillis().toString()
+
+                            val favouriteMovie = FavouriteMovie(
+                                firebaseId = firebaseId,
+                                tvDetails!!.adult,
+                                tvDetails!!.backdropPath,
+                                tvDetails!!.id,
+                                tvDetails!!.name,
+                                tvDetails!!.originalLanguage,
+                                tvDetails!!.originalName,
+                                tvDetails!!.overview,
+                                tvDetails!!.posterPath,
+                                tvDetails!!.type,
+                                tvDetails!!.popularity
+                            )
+
+                            viewModel.addToFavouriteMovies(favouriteMovie)
+                            isFavourite = true
+                        },
+                    ) {
+
+                        Icon(
+                            painter = painterResource(
+                                id = R.drawable.ic_heart_selceted
+                            ),
+                            contentDescription = null,
+                            tint = animatedColor.value,
+                            modifier = Modifier.size(20.dp)
+                        )
+
+                    }
+
                 }
 
                 Text(

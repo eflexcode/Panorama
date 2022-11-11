@@ -1,6 +1,7 @@
 package com.larrex.panorama.ui.screens.navigation
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
@@ -9,8 +10,10 @@ import androidx.navigation.compose.composable
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.larrex.panorama.ui.screens.*
 
+private const val TAG = "MainNavigation"
+
 @Composable
-fun BottomNavGraph(navHostController: NavHostController,application: Application) {
+fun BottomNavGraph(navHostController: NavHostController, application: Application) {
 
     val uiControl = rememberSystemUiController()
 
@@ -19,7 +22,7 @@ fun BottomNavGraph(navHostController: NavHostController,application: Application
     NavHost(navController = navHostController, startDestination = NavScreens.Movies.route) {
 
         composable(NavScreens.Movies.route) {
-            Movies(navHostController,application)
+            Movies(navHostController, application)
         }
         composable(NavScreens.TvShows.route) {
             TvShows(navHostController)
@@ -35,11 +38,13 @@ fun BottomNavGraph(navHostController: NavHostController,application: Application
         }
         composable(NavScreens.MovieDetails.route) {
 
-            val id = navHostController.previousBackStackEntry?.savedStateHandle?.get<String>("id")
+            Log.d(TAG, "BottomNavGraph: ")
 
-            if (id != null) {
-                MovieDetails(id)
-            }
+            val id =
+                navHostController.previousBackStackEntry?.savedStateHandle?.get<String>("movieId")
+
+            MovieDetails(id)
+
         }
         composable(NavScreens.TvDetails.route) {
 
@@ -49,12 +54,13 @@ fun BottomNavGraph(navHostController: NavHostController,application: Application
                 TvDetails(id)
             }
         }
-        composable(NavScreens.MovieDetails.route) {
+        composable(NavScreens.MovieGenre.route) {
 
-            val type = navHostController.previousBackStackEntry?.savedStateHandle?.get<CategoryType>("type")
+            val type =
+                navHostController.previousBackStackEntry?.savedStateHandle?.get<CategoryType>("type")
 
             if (type != null) {
-                MovieGenre(navHostController,type)
+                MovieGenre(navHostController, type)
             }
         }
 

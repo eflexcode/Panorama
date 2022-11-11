@@ -2,6 +2,7 @@ package com.larrex.panorama.domain.repository
 
 import com.google.firebase.auth.AuthCredential
 import com.larrex.panorama.core.Result
+import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
@@ -28,5 +29,6 @@ interface Repository {
     fun getMovieCredits(id: String): Flow<Credits?>
     fun getTvDetails(id: String): Flow<TvDetails?>
     fun getTvCredits(id: String): Flow<CreditsTv?>
+    fun addToFavouriteMovies(favouriteMovie: FavouriteMovie)
 
 }

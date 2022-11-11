@@ -5,11 +5,13 @@ import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.larrex.panorama.Util
 import com.larrex.panorama.core.Status
 import com.larrex.panorama.core.Result
+import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.repository.Repository
 import com.larrex.panorama.domain.retrofit.ApiClient
@@ -65,11 +67,10 @@ class RepositoryImpl @Inject constructor(
 
             trySend(Result(Status.LOADING, ""))
 
-            val firebaseAuth = FirebaseAuth.getInstance()
 
             if (authCredential != null)
 
-                firebaseAuth.signInWithCredential(authCredential)
+                auth.signInWithCredential(authCredential)
                     .addOnCompleteListener(OnCompleteListener { authResult ->
 
                         if (authResult.isSuccessful) {
@@ -78,15 +79,15 @@ class RepositoryImpl @Inject constructor(
 
                             if (newUser == true) {
 
-                                val firebaseFirestore = FirebaseFirestore.getInstance()
+//                                val firebaseFirestore = FirebaseFirestore.getInstance()
 
                                 val collectionReference =
-                                    firebaseFirestore.collection(Util.USER_COLLECTION)
+                                    firestore.collection(Util.USER_COLLECTION)
 
                                 val documentReference =
-                                    collectionReference.document(firebaseAuth.uid!!)
+                                    collectionReference.document(auth.uid!!)
 
-                                val id: String = firebaseAuth.uid!!
+                                val id: String = auth.uid!!
                                 val name: String = authResult.result.user?.displayName!!
                                 val imageUrl: String = authResult.result.user?.photoUrl.toString()
 
@@ -193,7 +194,7 @@ class RepositoryImpl @Inject constructor(
 
         return flow<Movies?> {
 
-            val movies = apiClient.getMoviesWithGenres(id,page).execute()
+            val movies = apiClient.getMoviesWithGenres(id, page).execute()
 
             if (movies.isSuccessful) {
 
@@ -205,11 +206,11 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-    override fun getTvWithGenres(id: String,page: String): Flow<Movies?> {
+    override fun getTvWithGenres(id: String, page: String): Flow<Movies?> {
 
         return flow<Movies?> {
 
-            val tv = apiClient.getTvWithGenres(id,page).execute()
+            val tv = apiClient.getTvWithGenres(id, page).execute()
 
             if (tv.isSuccessful) {
 
@@ -296,6 +297,22 @@ class RepositoryImpl @Inject constructor(
             }
 
         }.flowOn(Dispatchers.IO)
+    }
+
+    override fun addToFavouriteMovies(favouriteMovie: FavouriteMovie) {
+
+        val documentReference = firestore.collection("Favourites")
+            .document(auth.currentUser?.uid.toString())
+            .collection("MyFavourites")
+            .document(favouriteMovie.id.toString())
+
+        Log.d(TAG, "addToFavouriteMovies: " + favouriteMovie.firebaseId.toString())
+
+        documentReference.set(favouriteMovie).addOnSuccessListener {
+
+        }
+
+
     }
 
 }

@@ -69,7 +69,7 @@ fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController
                 IconButton(onClick = {
 
                         navController.currentBackStackEntry?.savedStateHandle?.set("type" , type)
-                        navController.navigate(NavScreens.MovieDetails.route)
+                        navController.navigate(NavScreens.MovieGenre.route)
 
                 }, modifier = Modifier.weight(0.3f)) {
 
@@ -117,7 +117,7 @@ fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController
                             } else {
 
                                 navController.currentBackStackEntry?.savedStateHandle?.set(
-                                    "id",
+                                    "movieId",
                                     it.id.toString()
                                 )
                                 navController.navigate(NavScreens.MovieDetails.route)
