@@ -1,5 +1,6 @@
 package com.larrex.panorama.domain.repository
 
+import android.net.Uri
 import com.google.firebase.auth.AuthCredential
 import com.larrex.panorama.core.Result
 import com.larrex.panorama.domain.model.FavouriteMovie
@@ -30,5 +31,6 @@ interface Repository {
     fun getTvDetails(id: String): Flow<TvDetails?>
     fun getTvCredits(id: String): Flow<CreditsTv?>
     fun addToFavouriteMovies(favouriteMovie: FavouriteMovie)
+    fun updateProfile(name : String?,uri: Uri?)
 
 }

@@ -1,5 +1,9 @@
 package com.larrex.panorama.ui.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,7 +30,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.larrex.panorama.R
 import com.larrex.panorama.Util
 import com.larrex.panorama.ui.theme.ChipBackground
+import com.larrex.panorama.ui.theme.Green
 import com.larrex.panorama.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,181 +44,208 @@ fun Profile() {
 
     val user by viewModel.getUserDetails().collectAsState(initial = null)
 
-    val painter = rememberAsyncImagePainter(
-        model = user?.imageUrl,
-        placeholder = painterResource(id = R.drawable.gray),
-        error = painterResource(id = R.drawable.gray)
-    )
+//    val painter = rememberAsyncImagePainter(
+//        model = user?.imageUrl,
+//        placeholder = painterResource(id = R.drawable.gray),
+//        error = painterResource(id = R.drawable.gray)
+//    )
 
-    val name by remember { mutableStateOf(user?.name.toString()) }
+    var imageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
 
-    var newText by remember { mutableStateOf(TextFieldValue(name)) }
+    if (user != null) {
 
+        var newText by remember { mutableStateOf(TextFieldValue(user!!.name!!)) }
 
-//    if (user != null) {
-//
-//        newText = user?.name?.let { TextFieldValue(it) }!!
-//
-//    }
-    Box(
-        modifier = Modifier
-            .background(Color.Black)
-            .fillMaxSize()
-    ) {
+        val pickImage = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent(),
+            onResult = { uri: Uri? ->
 
-        Column(
-            modifier = Modifier.padding(top = 0.dp)
+                imageUri = uri
+
+            }
+        )
+
+        val painter = rememberAsyncImagePainter(
+            model = if (imageUri == null) user?.imageUrl else imageUri,
+            placeholder = painterResource(id = R.drawable.gray),
+            error = painterResource(id = R.drawable.gray)
+        )
+
+        Box(
+            modifier = Modifier
+                .background(Color.Black)
+                .fillMaxSize()
         ) {
 
-            Text(
-                text = "My Profile.", modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, top = 35.dp),
-                textAlign = TextAlign.Start,
-                fontSize = 25.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontFamily = Util.quicksand
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 30.dp), contentAlignment = Alignment.Center
+            Column(
+                modifier = Modifier.padding(top = 0.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painter,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(180.dp)
-                        .clip(CircleShape)
-                        .toggleable(
-                            value = true,
-                            enabled = true,
-                            role = null,
-                            onValueChange = {
 
-
-                            }), contentScale = ContentScale.Crop,
-                    alignment = Alignment.Center
+                Text(
+                    text = "My Profile.", modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, top = 35.dp),
+                    textAlign = TextAlign.Start,
+                    fontSize = 25.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Util.quicksand
                 )
-            }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(95.dp)
-                    .padding(start = 20.dp, end = 20.dp, top = 20.dp)
-                    .background(ChipBackground, RoundedCornerShape(5.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-
-                Column(
+                Box(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxWidth()
+                        .padding(top = 30.dp), contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painter,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(180.dp)
+                            .clip(CircleShape)
+                            .toggleable(
+                                value = true,
+                                enabled = true,
+                                role = null,
+                                onValueChange = {
+
+                                    pickImage.launch("image/*")
+
+                                }), contentScale = ContentScale.Crop,
+                        alignment = Alignment.Center
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(95.dp)
+                        .padding(start = 20.dp, end = 20.dp, top = 20.dp)
+                        .background(ChipBackground, RoundedCornerShape(5.dp)),
+                    contentAlignment = Alignment.Center
                 ) {
 
-                    FirebaseAuth.getInstance().currentUser?.email?.let {
-                        Text(
-                            text = it, modifier = Modifier
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        TextField(
+                            value = FirebaseAuth.getInstance().currentUser?.email.toString(),
+                            onValueChange = { text ->
+                            },
+                            modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(start = 20.dp),
-                            textAlign = TextAlign.Start,
-                            fontSize = 16.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = Util.quicksand
+                                .height(53.dp),
+                            colors = TextFieldDefaults.textFieldColors(
+                                contentColorFor(backgroundColor = Color.Transparent),
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                containerColor = Color.Transparent,
+                                placeholderColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent
+                            ),
+                            singleLine = true,
+                            placeholder = { Text(text = "Enter email", color = Color.Gray) },
+                            textStyle = TextStyle.Default.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = Util.quicksand,
+                                fontSize = 16.sp,
+                                color = Color.White
+                            ),
+                            enabled = false
+
+
                         )
+
                     }
 
-                    Text(
-                        text = "Email",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 20.dp),
-                        textAlign = TextAlign.Start,
-                        fontSize = 12.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Normal,
-                        fontFamily = Util.quicksand
-
-                    )
                 }
 
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(95.dp)
-                    .padding(start = 20.dp, end = 20.dp, top = 10.dp)
-                    .background(ChipBackground, RoundedCornerShape(5.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-
-                Column(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxWidth()
+                        .height(95.dp)
+                        .padding(start = 20.dp, end = 20.dp, top = 10.dp)
+                        .background(ChipBackground, RoundedCornerShape(5.dp)),
+                    contentAlignment = Alignment.Center
                 ) {
 
-//                    Text(
-//                        text = user?.name.toString(), modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(start = 20.dp, top = 4.dp),
-//                        textAlign = TextAlign.Start,
-//                        fontSize = 16.sp,
-//                        color = Color.White,
-//                        fontWeight = FontWeight.Bold,
-//                        fontFamily = Util.quicksand
-//                    )
-
-                    TextField(
-                        value = newText,
-                        onValueChange = { text ->
-                            newText = text
-                        },
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth().height(55.dp),
-                        colors = TextFieldDefaults.textFieldColors(
-                            contentColorFor(backgroundColor = Color.Transparent),
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            containerColor = Color.Transparent,
-                            placeholderColor = Color.Gray,
-                        ),
-                        singleLine = true,
-                        placeholder = { Text(text = "Enter name", color = Color.Gray) },
-                        textStyle = TextStyle.Default.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = Util.quicksand,
-                            fontSize = 16.sp
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        TextField(
+                            value = newText,
+                            onValueChange = { text ->
+                                newText = text
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(53.dp),
+                            colors = TextFieldDefaults.textFieldColors(
+                                contentColorFor(backgroundColor = Color.Transparent),
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                containerColor = Color.Transparent,
+                                placeholderColor = Color.Gray,
+                            ),
+                            singleLine = true,
+                            placeholder = { Text(text = "Enter name", color = Color.Gray) },
+                            textStyle = TextStyle.Default.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = Util.quicksand,
+                                fontSize = 16.sp,
+                                color = Color.White
+                            )
+
                         )
 
+                    }
 
-                    )
-
-                    Text(
-                        text = "Edit your name here",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 15.dp, top = 0.dp, bottom = 0.dp),
-                        textAlign = TextAlign.Start,
-                        fontSize = 12.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Normal,
-                        fontFamily = Util.quicksand
-
-                    )
                 }
+                Button(
+                    onClick = {
 
+                        if (newText.text.trim().isNotEmpty()) {
+
+
+                            if (imageUri == null) {
+
+                                viewModel.updateProfile(newText.text,null)
+
+                            } else {
+                                viewModel.updateProfile(newText.text, uri = imageUri)
+
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .width(200.dp)
+                        .padding(top = 20.dp)
+                        .padding(bottom = 10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.Black,
+                        containerColor = Green
+                    )
+                ) {
+
+                    Text(text = "Save changes ")
+
+                }
             }
 
-        }
 
+        }
     }
 
 }

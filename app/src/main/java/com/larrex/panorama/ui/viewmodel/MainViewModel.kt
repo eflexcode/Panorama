@@ -1,5 +1,6 @@
 package com.larrex.panorama.ui.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
@@ -208,7 +209,7 @@ class MainViewModel @Inject constructor(
 
         val collectionReference = firestore.collection("Favourites")
             .document(auth.currentUser?.uid.toString())
-            .collection("MyFavourites").orderBy("firebaseId",Query.Direction.DESCENDING)
+            .collection("MyFavourites").orderBy("firebaseId", Query.Direction.DESCENDING)
 
         collectionReference.addSnapshotListener { value, e ->
 
@@ -228,5 +229,10 @@ class MainViewModel @Inject constructor(
         }
 
     }
+
+    fun updateProfile(name: String?, uri: Uri?) {
+        repository.updateProfile(name, uri)
+    }
+
 
 }

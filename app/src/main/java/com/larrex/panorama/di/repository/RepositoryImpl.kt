@@ -1,16 +1,18 @@
 package com.larrex.panorama.di.repository
 
 import android.app.Application
+import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.larrex.panorama.Util
-import com.larrex.panorama.core.Status
 import com.larrex.panorama.core.Result
+import com.larrex.panorama.core.Status
 import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.repository.Repository
@@ -92,7 +94,7 @@ class RepositoryImpl @Inject constructor(
                                 val imageUrl: String = authResult.result.user?.photoUrl.toString()
                                 val emial: String = authResult.result.user!!.email.toString()
 
-                                val user = User(id, name, imageUrl)
+                                val user = User(id, emial, name, imageUrl)
 
                                 documentReference.set(user).addOnSuccessListener {
                                     trySend(Result(Status.SUCCESS, ""))
@@ -313,6 +315,56 @@ class RepositoryImpl @Inject constructor(
 
         }
 
+
+    }
+
+    override fun updateProfile(name: String?, uri: Uri?) {
+
+        if (uri == null) {
+            val firebaseFirestore = FirebaseFirestore.getInstance()
+
+            val collectionReference = firebaseFirestore.collection("Users")
+
+            val documentReference = collectionReference.document(
+             auth.uid!!
+            )
+
+            val map: MutableMap<String, Any> = HashMap()
+            map.put("name",name!!)
+
+            documentReference.update(map)
+
+        } else {
+
+            val firebaseStorage = FirebaseStorage.getInstance()
+
+            val storageReference = firebaseStorage.getReference("profilePictures")
+            val fileReference = storageReference.child(System.currentTimeMillis().toString() + "")
+
+            val uploadTask = fileReference.putFile(uri)
+            uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    throw task.exception!!
+                }
+                fileReference.downloadUrl
+            }.addOnCompleteListener { task ->
+                val firebaseFirestore = FirebaseFirestore.getInstance()
+                val collectionReference =
+                    firebaseFirestore.collection("Users")
+                val documentReference = collectionReference.document(
+                    FirebaseAuth.getInstance().uid!!
+                )
+                val map: MutableMap<String, Any> =
+                    java.util.HashMap()
+                map.put("name",  name!!)
+                map.put("imageUrl",  task.result.toString())
+                documentReference.update(map)
+            }.addOnFailureListener {
+
+            }
+
+
+        }
 
     }
 
