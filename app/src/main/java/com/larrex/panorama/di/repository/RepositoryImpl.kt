@@ -19,6 +19,7 @@ import com.larrex.panorama.domain.repository.Repository
 import com.larrex.panorama.domain.retrofit.ApiClient
 import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
+import com.larrex.panorama.domain.retrofit.model.Search
 import com.larrex.panorama.domain.retrofit.model.moviedetails.Credits
 import com.larrex.panorama.domain.retrofit.model.moviedetails.CreditsTv
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
@@ -365,6 +366,22 @@ class RepositoryImpl @Inject constructor(
 
 
         }
+
+    }
+
+    override fun search(keyword: String, page: String): Flow<Search?> {
+
+        return flow<Search?> {
+
+            val search = apiClient.search(keyword,page).execute()
+
+            if (search.isSuccessful) {
+
+                emit(search.body())
+
+            }
+
+        }.flowOn(Dispatchers.IO)
 
     }
 

@@ -28,7 +28,7 @@ fun BottomNavGraph(navHostController: NavHostController, application: Applicatio
             TvShows(navHostController)
         }
         composable(NavScreens.Search.route) {
-            Search()
+            Search(navHostController)
         }
         composable(NavScreens.Favorite.route) {
             Favorite(navHostController)

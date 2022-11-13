@@ -3,6 +3,7 @@ package com.larrex.panorama.domain.retrofit
 import com.larrex.panorama.Util
 import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
+import com.larrex.panorama.domain.retrofit.model.Search
 import com.larrex.panorama.domain.retrofit.model.moviedetails.Credits
 import com.larrex.panorama.domain.retrofit.model.moviedetails.CreditsTv
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
@@ -53,5 +54,10 @@ interface ApiClient {
 
     @GET("tv/{tv_id}/credits?api_key=" + Util.API_KEY + "&language=en-US")
     fun getTvCredits(@Path("tv_id") id: String): Call<CreditsTv>
+
+//    3/search/multi?api_key=ea2c24d1075046490884393681831ff8&language=en-US&query=black&page=1&include_adult=false
+
+    @GET("search/multi?api_key=" + Util.API_KEY + "&language=en-US&include_adult=false")
+    fun search(@Query("query") keyword: String,  @Query("page") page: String): Call<Search>
 
 }

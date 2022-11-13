@@ -14,9 +14,7 @@ import com.larrex.panorama.core.Result
 import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.repository.Repository
-import com.larrex.panorama.domain.retrofit.model.Category
-import com.larrex.panorama.domain.retrofit.model.Movies
-import com.larrex.panorama.domain.retrofit.model.Results
+import com.larrex.panorama.domain.retrofit.model.*
 import com.larrex.panorama.domain.retrofit.model.moviedetails.Credits
 import com.larrex.panorama.domain.retrofit.model.moviedetails.CreditsTv
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
@@ -25,10 +23,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -56,6 +51,7 @@ class MainViewModel @Inject constructor(
 
     val tvMovieWithGenreList = mutableStateListOf<Results>()
     val favouriteMovies = mutableStateListOf<FavouriteMovie>()
+    val searchResults = mutableStateListOf<SearchResult>()
 
     fun getPageWithGenre(newPage: String, id: String, tv: Boolean) {
 
@@ -232,6 +228,20 @@ class MainViewModel @Inject constructor(
 
     fun updateProfile(name: String?, uri: Uri?) {
         repository.updateProfile(name, uri)
+    }
+
+    fun search(keyword: String, page: String) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            repository.search(keyword, page).collectLatest {
+
+                if (it != null) {
+                    searchResults.addAll(it.results)
+                }
+
+            }
+        }
     }
 
 

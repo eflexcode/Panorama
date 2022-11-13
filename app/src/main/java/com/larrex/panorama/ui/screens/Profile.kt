@@ -218,7 +218,6 @@ fun Profile() {
 
                         if (newText.text.trim().isNotEmpty()) {
 
-
                             if (imageUri == null) {
 
                                 viewModel.updateProfile(newText.text,null)

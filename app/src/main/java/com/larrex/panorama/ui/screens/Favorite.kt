@@ -44,7 +44,7 @@ fun Favorite(navController: NavController) {
             Text(
                 text = "My Likes.", modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 20.dp, top = 35.dp),
+                    .padding(start = 20.dp, top = 35.dp, bottom = 10.dp),
                 textAlign = TextAlign.Start,
                 fontSize = 25.sp,
                 color = Color.White,
@@ -54,7 +54,7 @@ fun Favorite(navController: NavController) {
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
-                contentPadding = PaddingValues(bottom = 70.dp, top = 10.dp)
+                contentPadding = PaddingValues(bottom =60.dp, top = 10.dp)
             ) {
 
                 itemsIndexed(viewModel.favouriteMovies) { index, item ->

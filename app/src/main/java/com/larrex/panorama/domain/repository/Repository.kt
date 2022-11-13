@@ -7,6 +7,7 @@ import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.model.User
 import com.larrex.panorama.domain.retrofit.model.Category
 import com.larrex.panorama.domain.retrofit.model.Movies
+import com.larrex.panorama.domain.retrofit.model.Search
 import com.larrex.panorama.domain.retrofit.model.moviedetails.Credits
 import com.larrex.panorama.domain.retrofit.model.moviedetails.CreditsTv
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
@@ -32,5 +33,5 @@ interface Repository {
     fun getTvCredits(id: String): Flow<CreditsTv?>
     fun addToFavouriteMovies(favouriteMovie: FavouriteMovie)
     fun updateProfile(name : String?,uri: Uri?)
-
+    fun search(id: String, page: String): Flow<Search?>
 }
