@@ -73,7 +73,6 @@ class RepositoryImpl @Inject constructor(
 
             trySend(Result(Status.LOADING, ""))
 
-
             if (authCredential != null)
 
                 auth.signInWithCredential(authCredential)
@@ -122,7 +121,6 @@ class RepositoryImpl @Inject constructor(
     }
 
     override fun getUserDetails(): Flow<User?> {
-
 
         return callbackFlow<User?> {
 
@@ -320,6 +318,7 @@ class RepositoryImpl @Inject constructor(
                 }
 
             } catch (e: Exception) {
+
                 emit(NetworkResult(Status.FAILURE, null))
 
             }
