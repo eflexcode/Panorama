@@ -1,9 +1,5 @@
 # Panorama
 
-###Credits 
-
-
-
 <p float="left">
 
   <img src="/image/image8.png" width="250" /> 
@@ -17,3 +13,9 @@
 [//]: # (  <img src="/image/image7.png" width="250" />)
 
 </p>
+
+##Credit
+
+* Api : [The movie Db](https://www.themoviedb.org/) They are the best
+* 
+
