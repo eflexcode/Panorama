@@ -2,7 +2,6 @@ package com.larrex.panorama.ui.viewmodel
 
 import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,6 +9,7 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.larrex.panorama.core.NetworkResult
 import com.larrex.panorama.core.Result
 import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.model.User
@@ -46,6 +46,7 @@ class MainViewModel @Inject constructor(
     }
 
     private var firstPage = 1
+     var firstPage2 = 1
 
     val tvMovieList = mutableStateListOf<Results>()
 
@@ -66,17 +67,13 @@ class MainViewModel @Inject constructor(
                 if (tv) {
                     repository.getTvWithGenres(id, newPage).collectLatest {
 
-                        if (it != null) {
-                            tvMovieWithGenreList.addAll(it.results)
-                        }
+                        it.result?.let { it1 -> tvMovieWithGenreList.addAll(it1.results) }
                     }
 
                 } else {
                     repository.getMoviesWithGenres(id, newPage).collectLatest {
 
-                        if (it != null) {
-                            tvMovieWithGenreList.addAll(it.results)
-                        }
+                        it.result?.let { it1 -> tvMovieWithGenreList.addAll(it1.results) }
                     }
                 }
 
@@ -96,31 +93,31 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun getTrending(): Flow<Movies?> {
+    fun getTrending(): Flow<NetworkResult<Movies?>> {
 
         return repository.getTrending()
 
     }
 
-    fun getCategory(): Flow<Category?> {
+    fun getCategory(): Flow<NetworkResult<Category?>> {
 
         return repository.getCategory()
 
     }
 
-    fun getCategoryTv(): Flow<Category?> {
+    fun getCategoryTv(): Flow<NetworkResult<Category?>> {
 
         return repository.getCategoryTv()
 
     }
 
-    fun getMoviesWithGenres(id: String, page: String): Flow<Movies?> {
+    fun getMoviesWithGenres(id: String, page: String): Flow<NetworkResult<Movies?>> {
 
         return repository.getMoviesWithGenres(id, page)
 
     }
 
-    fun getTvWithGenres(id: String, page: String): Flow<Movies?> {
+    fun getTvWithGenres(id: String, page: String): Flow<NetworkResult<Movies?>> {
 
         return repository.getTvWithGenres(id, page)
 
@@ -129,41 +126,44 @@ class MainViewModel @Inject constructor(
     fun getPage(newPage: String, id: String) {
 
         Log.d(TAG, "getPage: $newPage")
-        Log.d(TAG, "getPage: $id")
+        Log.d(TAG, "getPage id: $id")
 
-        CoroutineScope(Dispatchers.IO).launch {
+        if (firstPage2 == newPage.toInt()) {
 
-            repository.getTvWithNetwork(id, newPage).collectLatest {
+            firstPage2++
 
-                if (it != null) {
-                    tvMovieList.addAll(it.results)
-                    Log.d(TAG, "getPage: " + tvMovieList.size)
+            CoroutineScope(Dispatchers.IO).launch {
+
+                repository.getTvWithNetwork(id, newPage).collectLatest {
+
+                    if (it.result != null) {
+                        tvMovieList.addAll(it.result.results)
+                        Log.d(TAG, "getPage size: " + tvMovieList.size)
+                    }
                 }
             }
-
         }
-
     }
 
-    fun getMovieDetails(id: String): Flow<MovieDetails?> {
+    fun getMovieDetails(id: String): Flow<NetworkResult<MovieDetails?>> {
 
         return repository.getMovieDetails(id)
 
     }
 
-    fun getMovieCredits(id: String): Flow<Credits?> {
+    fun getMovieCredits(id: String): Flow<NetworkResult<Credits?>> {
 
         return repository.getMovieCredits(id)
 
     }
 
-    fun getTvDetails(id: String): Flow<TvDetails?> {
+    fun getTvDetails(id: String): Flow<NetworkResult<TvDetails?>> {
 
         return repository.getTvDetails(id)
 
     }
 
-    fun getTvCredits(id: String): Flow<CreditsTv?> {
+    fun getTvCredits(id: String): Flow<NetworkResult<CreditsTv?>> {
 
         return repository.getTvCredits(id)
 
@@ -237,7 +237,7 @@ class MainViewModel @Inject constructor(
             repository.search(keyword, page).collectLatest {
 
                 if (it != null) {
-                    searchResults.addAll(it.results)
+                    it.result?.let { it1 -> searchResults.addAll(it1.results) }
                 }
 
             }

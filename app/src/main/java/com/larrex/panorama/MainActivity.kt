@@ -38,7 +38,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-
                     val navHostController = rememberNavController()
                     val auth = FirebaseAuth.getInstance().currentUser
 

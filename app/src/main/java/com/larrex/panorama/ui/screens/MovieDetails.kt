@@ -36,6 +36,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowRow
 import com.larrex.panorama.R
 import com.larrex.panorama.Util
+import com.larrex.panorama.core.NetworkResult
+import com.larrex.panorama.core.Status
 import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
@@ -61,7 +63,7 @@ fun MovieDetails(id: String?) {
 //    var isFavourite by remember { mutableStateOf(false) }
 
 
-    val isFavourite by viewModel.checkIfIsAlreadyLiked(id).collectAsState(initial = null)
+    val isFavourite by viewModel.checkIfIsAlreadyLiked(id).collectAsState(NetworkResult(Status.LOADING,null))
 
     val animatedColor = animateColorAsState(
         targetValue = if (isFavourite == true) Green else ChipBackground,
@@ -74,10 +76,10 @@ fun MovieDetails(id: String?) {
             .fillMaxSize()
     ) {
 
-        val movieDetails by viewModel.getMovieDetails(id.toString()).collectAsState(initial = null)
-        val credits by viewModel.getMovieCredits(id.toString()).collectAsState(initial = null)
+        val movieDetails by viewModel.getMovieDetails(id.toString()).collectAsState(initial = NetworkResult(Status.LOADING,null))
+        val credits by viewModel.getMovieCredits(id.toString()).collectAsState(initial = NetworkResult(Status.LOADING,null))
 
-        if (movieDetails != null) {
+        if (movieDetails.status == Status.SUCCESS) {
             Box(
                 modifier = Modifier
                     .background(Color.Black)
@@ -98,7 +100,7 @@ fun MovieDetails(id: String?) {
                     ) {
 
                         GlideImage(
-                            imageModel = { "https://image.tmdb.org/t/p/w780" + movieDetails?.posterPath },
+                            imageModel = { "https://image.tmdb.org/t/p/w780" + movieDetails.result?.posterPath },
                             modifier = Modifier
                                 .fillMaxSize()
                                 .drawWithCache {
@@ -164,7 +166,7 @@ fun MovieDetails(id: String?) {
                         }
 
                         Text(
-                            text = "Rating " + movieDetails?.voteAverage,
+                            text = "Rating " + movieDetails.result?.voteAverage,
                             fontSize = 16.sp,
                             fontStyle = FontStyle.Normal,
                             fontWeight = FontWeight.Normal,
@@ -182,15 +184,15 @@ fun MovieDetails(id: String?) {
                                 val favouriteMovie = FavouriteMovie(
                                     false,
                                     firebaseId = firebaseId,
-                                    movieDetails!!.adult,
-                                    movieDetails!!.backdropPath,
-                                    movieDetails!!.id,
-                                    movieDetails!!.title,
-                                    movieDetails!!.originalLanguage,
-                                    movieDetails!!.originalTitle,
-                                    movieDetails!!.overview,
-                                    movieDetails!!.posterPath,
-                                    popularity = movieDetails!!.popularity
+                                    movieDetails.result?.adult,
+                                    movieDetails.result?.backdropPath,
+                                    movieDetails.result?.id,
+                                    movieDetails.result?.title,
+                                    movieDetails.result?.originalLanguage,
+                                    movieDetails.result?.originalTitle,
+                                    movieDetails.result?.overview,
+                                    movieDetails.result?.posterPath,
+                                    popularity = movieDetails.result?.popularity
                                 )
 
                                 viewModel.addToFavouriteMovies(favouriteMovie)
@@ -212,7 +214,7 @@ fun MovieDetails(id: String?) {
                     }
 
                     Text(
-                        text = movieDetails?.title + "",
+                        text = movieDetails.result?.title + "",
                         textAlign = TextAlign.Start,
                         fontSize = 25.sp,
                         color = Color.White,
@@ -232,7 +234,7 @@ fun MovieDetails(id: String?) {
                         )
                     ) {
 
-                        movieDetails?.genres?.forEach {
+                        movieDetails.result?.genres?.forEach {
 
                             Surface(
                                 modifier = Modifier
@@ -263,7 +265,7 @@ fun MovieDetails(id: String?) {
                     }
 
                     Text(
-                        text = movieDetails?.overview + "",
+                        text = movieDetails.result?.overview + "",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(end = 40.dp, start = 20.dp, top = 0.dp),
@@ -296,7 +298,7 @@ fun MovieDetails(id: String?) {
                         )
                     ) {
 
-                        credits?.let {
+                        credits.result?.let {
                             items(it.cast) {
 
                                 CastItem(
@@ -315,7 +317,7 @@ fun MovieDetails(id: String?) {
                 }
 
             }
-        } else {
+        } else if (movieDetails.status == Status.LOADING){
             Box(
                 contentAlignment = Alignment.Center, modifier = Modifier
                     .background(Color.Black)
@@ -323,6 +325,35 @@ fun MovieDetails(id: String?) {
             ) {
 
                 CircularProgressIndicator(color = Color.White)
+
+            }
+        }else if (movieDetails.status == Status.FAILURE){
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                    .fillMaxSize()
+
+            ) {
+
+                Text(
+                    text = "Your offline.",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 25.sp,
+                    color = ChipBackground,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Util.quicksand,
+
+                    )
+
+                Image(
+                    painter = painterResource(id = R.drawable.no_wifi),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(100.dp),
+                )
 
             }
         }

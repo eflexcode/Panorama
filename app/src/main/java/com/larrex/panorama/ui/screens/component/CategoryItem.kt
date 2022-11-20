@@ -38,7 +38,8 @@ import kotlinx.coroutines.launch
 fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController, movies: Movies?,id:Int) {
 
     val type = CategoryType(id, categoryName,tv)
-
+//    val movies by viewModel.getMoviesWithGenres(id.toString(), "1")
+//        .collectAsState(initial = null)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -101,29 +102,31 @@ fun CategoryItem(categoryName: String, tv: Boolean, navController: NavController
 
                 LazyRow(contentPadding = PaddingValues(start = 15.dp, end = 30.dp)) {
 
-                    items(movies.results, contentType = { Results() }) {
+                    movies.let {
+                        items(it.results, contentType = { Results() }) {
 
-                        MovieItem(
-                            tv = tv,
-                            imageUrl = "https://image.tmdb.org/t/p/w342" + it.posterPath,
-                        ) {
-                            if (tv) {
-                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                    "tvId",
-                                    it.id.toString()
-                                )
+                            MovieItem(
+                                tv = tv,
+                                imageUrl = "https://image.tmdb.org/t/p/w342" + it.posterPath,
+                            ) {
+                                if (tv) {
+                                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                                        "tvId",
+                                        it.id.toString()
+                                    )
 
-                                navController.navigate(NavScreens.TvDetails.route)
-                            } else {
+                                    navController.navigate(NavScreens.TvDetails.route)
+                                } else {
 
-                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                    "movieId",
-                                    it.id.toString()
-                                )
-                                navController.navigate(NavScreens.MovieDetails.route)
+                                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                                        "movieId",
+                                        it.id.toString()
+                                    )
+                                    navController.navigate(NavScreens.MovieDetails.route)
+                                }
                             }
-                        }
 
+                        }
                     }
 
                 }

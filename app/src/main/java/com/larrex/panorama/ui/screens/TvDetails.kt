@@ -37,6 +37,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowRow
 import com.larrex.panorama.R
 import com.larrex.panorama.Util
+import com.larrex.panorama.core.NetworkResult
+import com.larrex.panorama.core.Status
 import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.retrofit.model.Movies
 import com.larrex.panorama.domain.retrofit.model.moviedetails.MovieDetails
@@ -68,23 +70,29 @@ fun TvDetails(id: String) {
 
     Log.d(TAG, "TvDetails: " + id)
 
-    val tvDetails by viewModel.getTvDetails(id).collectAsState(initial = null)
-    val credits by viewModel.getTvCredits(id).collectAsState(initial = null)
+    val tvDetails by viewModel.getTvDetails(id)
+        .collectAsState(initial = NetworkResult(Status.LOADING, null))
+    val credits by viewModel.getTvCredits(id)
+        .collectAsState(initial = NetworkResult(Status.LOADING, null))
 
-    val isFavourite by viewModel.checkIfIsAlreadyLiked(id).collectAsState(initial = null)
+    val isFavourite by viewModel.checkIfIsAlreadyLiked(id).collectAsState(
+        initial = NetworkResult(
+            Status.LOADING, null
+        )
+    )
 
     val animatedColor = animateColorAsState(
         targetValue = if (isFavourite == true) Green else ChipBackground,
         animationSpec = tween(1000, 0, LinearEasing)
     )
 
-    if (tvDetails != null) {
 
-        Box(
-            modifier = Modifier
-                .background(Color.Black)
-                .fillMaxSize()
-        ) {
+    Box(
+        modifier = Modifier
+            .background(Color.Black)
+            .fillMaxSize()
+    ) {
+        if (tvDetails.status == Status.SUCCESS) {
 
             Column(
                 modifier = Modifier
@@ -100,7 +108,7 @@ fun TvDetails(id: String) {
                 ) {
 
                     GlideImage(
-                        imageModel = { "https://image.tmdb.org/t/p/w780" + tvDetails?.posterPath },
+                        imageModel = { "https://image.tmdb.org/t/p/w780" + tvDetails.result?.posterPath },
                         modifier = Modifier
                             .fillMaxSize()
                             .drawWithCache {
@@ -166,7 +174,7 @@ fun TvDetails(id: String) {
                     }
 
                     Text(
-                        text = "Rating " + tvDetails?.voteAverage,
+                        text = "Rating " + tvDetails.result?.voteAverage,
                         fontSize = 16.sp,
                         fontStyle = FontStyle.Normal,
                         fontWeight = FontWeight.Normal,
@@ -181,18 +189,19 @@ fun TvDetails(id: String) {
 
                             val firebaseId = System.currentTimeMillis().toString()
 
-                            val favouriteMovie = FavouriteMovie(true,
+                            val favouriteMovie = FavouriteMovie(
+                                true,
                                 firebaseId = firebaseId,
-                                tvDetails!!.adult,
-                                tvDetails!!.backdropPath,
-                                tvDetails!!.id,
-                                tvDetails!!.name,
-                                tvDetails!!.originalLanguage,
-                                tvDetails!!.originalName,
-                                tvDetails!!.overview,
-                                tvDetails!!.posterPath,
-                                tvDetails!!.type,
-                                tvDetails!!.popularity
+                                tvDetails.result?.adult,
+                                tvDetails.result?.backdropPath,
+                                tvDetails.result?.id,
+                                tvDetails.result?.name,
+                                tvDetails.result?.originalLanguage,
+                                tvDetails.result?.originalName,
+                                tvDetails.result?.overview,
+                                tvDetails.result?.posterPath,
+                                tvDetails.result?.type,
+                                tvDetails.result?.popularity
                             )
 
                             viewModel.addToFavouriteMovies(favouriteMovie)
@@ -214,7 +223,7 @@ fun TvDetails(id: String) {
                 }
 
                 Text(
-                    text = tvDetails?.name + "",
+                    text = tvDetails.result?.name + "",
                     textAlign = TextAlign.Start,
                     fontSize = 25.sp,
                     color = Color.White,
@@ -234,7 +243,7 @@ fun TvDetails(id: String) {
                     )
                 ) {
 
-                    tvDetails?.genres?.forEach {
+                    tvDetails.result?.genres?.forEach {
 
                         Surface(
                             modifier = Modifier
@@ -265,7 +274,7 @@ fun TvDetails(id: String) {
                 }
 
                 Text(
-                    text = tvDetails?.overview + "",
+                    text = tvDetails.result?.overview + "",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(end = 20.dp, start = 20.dp, top = 0.dp),
@@ -298,10 +307,12 @@ fun TvDetails(id: String) {
                     ), state = state, flingBehavior = behavior
                 ) {
 
-                    tvDetails?.let {
-                        items(it.seasons) {
-                            SessionItem(seasons = it)
+                    tvDetails.let {
+                        it.result?.let { it1 ->
+                            items(it1.seasons) {
+                                SessionItem(seasons = it)
 
+                            }
                         }
                     }
 
@@ -329,16 +340,18 @@ fun TvDetails(id: String) {
                     )
                 ) {
 
-                    credits?.let {
-                        items(it.cast) {
+                    credits.let {
+                        it.result?.let { it1 ->
+                            items(it1.cast) {
 
-                            CastItem(
-                                imageUrl = "https://image.tmdb.org/t/p/w780" + it.profilePath,
-                                name = it.name + ""
-                            ) {
+                                CastItem(
+                                    imageUrl = "https://image.tmdb.org/t/p/w780" + it.profilePath,
+                                    name = it.name + ""
+                                ) {
+
+                                }
 
                             }
-
                         }
                     }
 
@@ -347,17 +360,46 @@ fun TvDetails(id: String) {
 
             }
 
-        }
-    } else {
+        } else if (tvDetails.status == Status.LOADING) {
 
-        Box(
-            contentAlignment = Alignment.Center, modifier = Modifier
-                .background(Color.Black)
-                .fillMaxSize()
-        ) {
+            Box(
+                contentAlignment = Alignment.Center, modifier = Modifier
+                    .background(Color.Black)
+                    .fillMaxSize()
+            ) {
 
-            CircularProgressIndicator(color = Color.White)
+                CircularProgressIndicator(color = Color.White)
 
+            }
+        } else if (tvDetails.status == Status.FAILURE) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                    .fillMaxSize()
+
+            ) {
+
+                Text(
+                    text = "Your offline.",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 25.sp,
+                    color = ChipBackground,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Util.quicksand,
+
+                    )
+
+                Image(
+                    painter = painterResource(id = R.drawable.no_wifi),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(100.dp),
+                )
+
+            }
         }
     }
 

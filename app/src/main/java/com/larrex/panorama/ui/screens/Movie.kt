@@ -2,41 +2,41 @@ package com.larrex.panorama.ui.screens
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.larrex.panorama.R
+import com.larrex.panorama.Util
+import com.larrex.panorama.core.NetworkResult
+import com.larrex.panorama.core.Status
 import com.larrex.panorama.domain.retrofit.model.Movies
 
 import com.larrex.panorama.ui.screens.component.CategoryItem
 import com.larrex.panorama.ui.screens.component.TrendingIndicator
 import com.larrex.panorama.ui.screens.component.TrendingItem
+import com.larrex.panorama.ui.theme.ChipBackground
 import com.larrex.panorama.ui.viewmodel.MainViewModel
-import com.skydoves.landscapist.animation.crossfade.CrossfadePlugin
-import com.skydoves.landscapist.components.imageComponent
-import com.skydoves.landscapist.glide.GlideImage
-import com.skydoves.landscapist.placeholder.placeholder.PlaceholderPlugin
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
-import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "Movie"
 
@@ -46,7 +46,8 @@ fun Movies(navController: NavController, application: Application) {
 
     val viewModel = hiltViewModel<MainViewModel>()
 
-    val trending by viewModel.getTrending().collectAsState(initial = null)
+    val trending by viewModel.getTrending()
+        .collectAsState(initial = NetworkResult(Status.LOADING, null))
     val category by viewModel.getCategory().collectAsState(initial = null)
 
     var currentIndicator by remember {
@@ -70,7 +71,7 @@ fun Movies(navController: NavController, application: Application) {
             .fillMaxSize()
     ) {
 
-        if (category == null) {
+        if (trending?.status == Status.LOADING) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -81,7 +82,37 @@ fun Movies(navController: NavController, application: Application) {
                 CircularProgressIndicator(color = Color.White)
 
             }
-        } else {
+        } else if (trending.status == Status.FAILURE) {
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                    .fillMaxSize()
+
+            ) {
+
+                Text(
+                    text = "Your offline.", modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 25.sp,
+                    color = ChipBackground,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Util.quicksand,
+
+                    )
+
+                Image(
+                    painter = painterResource(id = R.drawable.no_wifi),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(100.dp),
+                )
+
+            }
+
+        } else if (trending.status == Status.SUCCESS){
 
             Box(
                 modifier = Modifier
@@ -101,9 +132,8 @@ fun Movies(navController: NavController, application: Application) {
                             modifier = Modifier, state, flingBehavior = behavior
                         ) {
 
-                            if (trending != null) {
-
-                                itemsIndexed(trending!!.results) { index, it ->
+                            trending.result?.let {
+                                itemsIndexed(it.results) { index, it ->
 
                                     currentIndicator += 1
 
@@ -118,7 +148,7 @@ fun Movies(navController: NavController, application: Application) {
                                             ) {
 
                                                 Log.d(TAG, "Movies: " + list)
-                                                Log.d(TAG, "Movies: " + trending!!.results.size)
+                                                //                                                Log.d(TAG, "Movies: " + trending!!.results.size)
 
                                             }
                                         }
@@ -128,14 +158,10 @@ fun Movies(navController: NavController, application: Application) {
                         }
 
                         LazyRow() {
-                            if (trending != null) {
+                            trending.result?.let {
+                                itemsIndexed(it.results) { index, it ->
 
-                                itemsIndexed(trending!!.results) { index, it ->
 
-//                            Log.d(TAG, "Movies: " + state.layoutInfo.visibleItemsInfo[0].index)
-
-//                            if (state != null)
-//
                                     if (state.layoutInfo.visibleItemsInfo.size > 0) {
 
                                         val selected by remember { derivedStateOf { state.layoutInfo.visibleItemsInfo[0].index == index } }
@@ -148,30 +174,20 @@ fun Movies(navController: NavController, application: Application) {
 
                     }
 
-                    category?.genres?.forEach { item ->
-                        val movies by viewModel.getMoviesWithGenres(item.id.toString(),"1")
+                    category?.result?.genres?.forEach { item ->
+                        val movies by viewModel.getMoviesWithGenres(item.id.toString(), "1")
                             .collectAsState(initial = null)
 
                         item.id?.let {
                             CategoryItem(
-                                item.name.toString(), false, navController, movies, it
+                                item.name.toString(), false, navController, movies?.result, it
                             )
                         }
                     }
 
 
                 }
-//            category?.let {
-//                itemsIndexed(it.genres) { index, item ->
-//
-//                    item.name?.let { it1 ->
-//                        item.id?.let { it2 ->
-//
-//                        }
-//                    }
-//
-//                }
-//            }
+
             }
         }
 

@@ -2,6 +2,7 @@ package com.larrex.panorama.domain.repository
 
 import android.net.Uri
 import com.google.firebase.auth.AuthCredential
+import com.larrex.panorama.core.NetworkResult
 import com.larrex.panorama.core.Result
 import com.larrex.panorama.domain.model.FavouriteMovie
 import com.larrex.panorama.domain.model.User
@@ -21,17 +22,18 @@ interface Repository {
     suspend fun doGoogleAuth(authCredential: AuthCredential?): Flow<Result>
 
     fun getUserDetails(): Flow<User?>
-    fun getTrending(): Flow<Movies?>
-    fun getCategory(): Flow<Category?>
-    fun getCategoryTv(): Flow<Category?>
-    fun getMoviesWithGenres(id: String,page: String): Flow<Movies?>
-    fun getTvWithGenres(id: String,page: String): Flow<Movies?>
-    fun getTvWithNetwork(id: String, page: String): Flow<Movies?>
-    fun getMovieDetails(id: String): Flow<MovieDetails?>
-    fun getMovieCredits(id: String): Flow<Credits?>
-    fun getTvDetails(id: String): Flow<TvDetails?>
-    fun getTvCredits(id: String): Flow<CreditsTv?>
+    fun getTrending(): Flow<NetworkResult<Movies?>>
+    fun getCategory(): Flow<NetworkResult<Category?>>
+    fun getCategoryTv(): Flow<NetworkResult<Category?>>
+    fun getMoviesWithGenres(id: String,page: String): Flow<NetworkResult<Movies?>>
+    fun getTvWithGenres(id: String,page: String): Flow<NetworkResult<Movies?>>
+    fun getTvWithNetwork(id: String, page: String): Flow<NetworkResult<Movies?>>
+    fun getMovieDetails(id: String): Flow<NetworkResult<MovieDetails?>>
+    fun getMovieCredits(id: String): Flow<NetworkResult<Credits?>>
+    fun getTvDetails(id: String): Flow<NetworkResult<TvDetails?>>
+    fun getTvCredits(id: String): Flow<NetworkResult<CreditsTv?>>
     fun addToFavouriteMovies(favouriteMovie: FavouriteMovie)
     fun updateProfile(name : String?,uri: Uri?)
-    fun search(id: String, page: String): Flow<Search?>
+    fun search(keyword: String, page: String): Flow<NetworkResult<Search?>>
+
 }

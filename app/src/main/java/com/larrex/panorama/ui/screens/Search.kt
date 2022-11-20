@@ -1,6 +1,8 @@
 package com.larrex.panorama.ui.screens
 
 import android.os.Handler
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -8,11 +10,16 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -23,16 +30,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.larrex.panorama.R
 import com.larrex.panorama.Util
 import com.larrex.panorama.ui.screens.component.MovieItem
 import com.larrex.panorama.ui.screens.component.ProviderChip
 import com.larrex.panorama.ui.screens.navigation.NavScreens
 import com.larrex.panorama.ui.theme.ChipBackground
 import com.larrex.panorama.ui.viewmodel.MainViewModel
+import com.skydoves.landscapist.glide.GlideImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Search(navController : NavController) {
+fun Search(navController: NavController) {
 
     var newText by remember { mutableStateOf(TextFieldValue("")) }
     var page = 1
@@ -45,42 +54,82 @@ fun Search(navController : NavController) {
             .background(Color.Black)
             .fillMaxSize()
     ) {
+        if (viewModel.searchResults.isNotEmpty()) {
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
-                contentPadding = PaddingValues(bottom =60.dp, top = 150.dp)
+                contentPadding = PaddingValues(bottom = 60.dp, top = 150.dp)
             ) {
 
                 itemsIndexed(viewModel.searchResults) { index, item ->
 
-                        MovieItem(
-                            tv = item.mediaType == "tv",
-                            imageUrl = "https://image.tmdb.org/t/p/w342" + item.posterPath
-                        ) {
+                    if (viewModel.searchResults.size - 1 == index) {
 
-                            if (item.mediaType == "tv") {
-                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                    "tvId",
-                                    item.id.toString()
-                                )
+                        page += 1
 
-                                navController.navigate(NavScreens.TvDetails.route)
+                        viewModel.search(newText.text, page.toString())
 
-                            } else {
+                    }
 
-                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                    "movieId",
-                                    item.id.toString()
-                                )
+                    MovieItem(
+                        tv = item.mediaType == "tv",
+                        imageUrl = "https://image.tmdb.org/t/p/w342" + item.posterPath
+                    ) {
 
-                                navController.navigate(NavScreens.MovieDetails.route)
+                        if (item.mediaType == "tv") {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                "tvId",
+                                item.id.toString()
+                            )
 
-                            }
+                            navController.navigate(NavScreens.TvDetails.route)
 
+                        } else {
+
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                "movieId",
+                                item.id.toString()
+                            )
+
+                            navController.navigate(NavScreens.MovieDetails.route)
+
+                        }
 
                     }
 
                 }
             }
+        } else {
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                    .fillMaxSize()
+
+            ) {
+
+                Text(
+                    text = "Start typing.", modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 25.sp,
+                    color = ChipBackground,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Util.quicksand,
+
+                )
+
+                Image(
+                    painter = painterResource(id = R.drawable.typing),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(100.dp),
+                )
+
+            }
+
+        }
 
         Surface(color = Color.Black.copy(alpha = 0.6f)) {
 
@@ -102,12 +151,9 @@ fun Search(navController : NavController) {
                     onValueChange = { text ->
 
                         newText = text
+                        viewModel.searchResults.clear()
+                        viewModel.search(newText.text, "1")
 
-                        handler.postDelayed({
-
-                            viewModel.search(newText.text, "1")
-
-                        }, 5000)
 
                     },
                     modifier = Modifier

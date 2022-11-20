@@ -56,7 +56,11 @@ fun MainScreen(application: Application) {
         Scaffold(bottomBar = {
 
             val isNavBarVisible =
-                currentDestination?.route != NavScreens.TvDetails.route && currentDestination?.route != NavScreens.MovieDetails.route
+                currentDestination?.route != NavScreens.TvDetails.route
+                        && currentDestination?.route != NavScreens.MovieDetails.route
+
+
+                        && currentDestination?.route != NavScreens.MovieGenre.route
 
             AnimatedVisibility(
                 visible = isNavBarVisible,

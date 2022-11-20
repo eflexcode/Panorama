@@ -3,7 +3,6 @@ package com.larrex.panorama.di.repository
 import android.app.Application
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
@@ -11,6 +10,7 @@ import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.larrex.panorama.Util
+import com.larrex.panorama.core.NetworkResult
 import com.larrex.panorama.core.Result
 import com.larrex.panorama.core.Status
 import com.larrex.panorama.domain.model.FavouriteMovie
@@ -30,6 +30,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import javax.inject.Inject
 
 private const val TAG = "RepositoryImpl"
@@ -139,24 +142,162 @@ class RepositoryImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getTrending(): Flow<Movies?> {
+    override fun getTrending(): Flow<NetworkResult<Movies?>> {
 
-        return flow<Movies?> {
+        return flow<NetworkResult<Movies?>> {
 
-            val trending = apiClient.getTrending().execute()
+            try {
+                val api = apiClient.getTrending().execute()
 
-            if (trending.isSuccessful) {
+                if (api.isSuccessful)
 
-                emit(trending.body())
+                    emit(NetworkResult(Status.SUCCESS, api.body()))
 
-            } else {
-                val trending1 = apiClient.getTrending().execute()
+            } catch (e: Exception) {
+                emit(NetworkResult(Status.FAILURE, null))
 
-                if (trending1.isSuccessful) {
+            }
 
-                    emit(trending1.body())
+        }.flowOn(Dispatchers.IO)
+
+    }
+
+    override fun getCategory(): Flow<NetworkResult<Category?>> {
+
+        return flow<NetworkResult<Category?>> {
+
+            try {
+                val api = apiClient.getCategory().execute()
+
+                if (api.isSuccessful) {
+                    emit(NetworkResult(Status.SUCCESS, api.body()))
+                }
+
+            } catch (e: Exception) {
+                emit(NetworkResult(Status.FAILURE, null))
+            }
+
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getCategoryTv(): Flow<NetworkResult<Category?>> {
+
+        return flow<NetworkResult<Category?>> {
+
+            try {
+                val category = apiClient.getCategoryTv().execute()
+
+                if (category.isSuccessful) {
+
+                    emit(NetworkResult(Status.SUCCESS,category.body()))
 
                 }
+            }catch (e: Exception){
+
+
+                emit(NetworkResult(Status.FAILURE,null))
+
+            }
+
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getMoviesWithGenres(id: String, page: String): Flow<NetworkResult<Movies?>> {
+
+        return flow<NetworkResult<Movies?>> {
+
+            try {
+                val api = apiClient.getMoviesWithGenres(id, page).execute()
+
+                if (api.isSuccessful) {
+                    emit(NetworkResult(Status.SUCCESS, api.body()))
+                }
+            } catch (e: java.lang.Exception) {
+                emit(NetworkResult(Status.FAILURE, null))
+            }
+
+        }.flowOn(Dispatchers.IO)
+
+    }
+
+    override fun getTvWithGenres(id: String, page: String): Flow<NetworkResult<Movies?>> {
+
+        return flow<NetworkResult<Movies?>> {
+
+            try {
+                val tv = apiClient.getTvWithGenres(id, page).execute()
+
+                if (tv.isSuccessful) {
+
+                    emit(NetworkResult(Status.SUCCESS, tv.body()))
+
+                }
+            }catch (e : Exception){
+
+                emit(NetworkResult(Status.FAILURE,null))
+
+            }
+
+
+
+        }.flowOn(Dispatchers.IO)
+
+
+    }
+
+    override fun getTvWithNetwork(id: String, page: String): Flow<NetworkResult<Movies?>> {
+        return flow<NetworkResult<Movies?>> {
+
+            try {
+                val tv = apiClient.getTvWithNetwork(id, page).execute()
+
+                if (tv.isSuccessful) {
+
+                    emit(NetworkResult(Status.SUCCESS, tv.body()))
+
+                }
+            } catch (e: Exception) {
+                emit(NetworkResult(Status.FAILURE, null))
+            }
+
+
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getMovieDetails(id: String): Flow<NetworkResult<MovieDetails?>> {
+
+        return flow<NetworkResult<MovieDetails?>> {
+
+            try {
+                val api = apiClient.getMovieDetails(id).execute()
+
+                if (api.isSuccessful) {
+
+                    emit(NetworkResult(Status.SUCCESS, api.body()))
+
+                }
+
+            } catch (e: Exception) {
+                emit(NetworkResult(Status.FAILURE, null))
+            }
+
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getMovieCredits(id: String): Flow<NetworkResult<Credits?>> {
+
+        return flow<NetworkResult<Credits?>> {
+
+            try {
+                val credits = apiClient.getMovieCredits(id).execute()
+
+                if (credits.isSuccessful) {
+
+                    emit(NetworkResult(Status.SUCCESS, credits.body()))
+                }
+            } catch (e: Exception) {
+                emit(NetworkResult(Status.FAILURE, null))
+
             }
 
 
@@ -164,141 +305,48 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-    override fun getCategory(): Flow<Category?> {
-        return flow<Category?> {
+    override fun getTvDetails(id: String): Flow<NetworkResult<TvDetails?>> {
 
-            val category = apiClient.getCategory().execute()
+        return flow<NetworkResult<TvDetails?>> {
 
-            if (category.isSuccessful) {
+            try {
 
-                emit(category.body())
+                val tvDetails = apiClient.getTvDetails(id).execute()
 
-            }
+                if (tvDetails.isSuccessful) {
 
+                    emit(NetworkResult(Status.SUCCESS, tvDetails.body()))
 
-        }.flowOn(Dispatchers.IO)
-    }
+                }
 
-    override fun getCategoryTv(): Flow<Category?> {
-        return flow<Category?> {
-
-            val category = apiClient.getCategoryTv().execute()
-
-            if (category.isSuccessful) {
-
-                emit(category.body())
+            } catch (e: Exception) {
+                emit(NetworkResult(Status.FAILURE, null))
 
             }
 
 
         }.flowOn(Dispatchers.IO)
-    }
-
-    override fun getMoviesWithGenres(id: String, page: String): Flow<Movies?> {
-
-        return flow<Movies?> {
-
-            val movies = apiClient.getMoviesWithGenres(id, page).execute()
-
-            if (movies.isSuccessful) {
-
-                emit(movies.body())
-
-            }
-
-        }.flowOn(Dispatchers.IO)
 
     }
 
-    override fun getTvWithGenres(id: String, page: String): Flow<Movies?> {
+    override fun getTvCredits(id: String): Flow<NetworkResult<CreditsTv?>> {
+        return flow<NetworkResult<CreditsTv?>> {
 
-        return flow<Movies?> {
+            try {
+                val credits = apiClient.getTvCredits(id).execute()
 
-            val tv = apiClient.getTvWithGenres(id, page).execute()
+                if (credits.isSuccessful) {
 
-            if (tv.isSuccessful) {
+                    emit(NetworkResult(Status.SUCCESS, credits.body()))
 
-                emit(tv.body())
+                }
 
-            }
+            } catch (e: Exception) {
 
-        }.flowOn(Dispatchers.IO)
-
-
-    }
-
-    override fun getTvWithNetwork(id: String, page: String): Flow<Movies?> {
-        return flow<Movies?> {
-
-            val tv = apiClient.getTvWithNetwork(id, page).execute()
-
-            if (tv.isSuccessful) {
-
-                emit(tv.body())
+                emit(NetworkResult(Status.FAILURE, null))
 
             }
 
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun getMovieDetails(id: String): Flow<MovieDetails?> {
-
-        return flow<MovieDetails?> {
-
-            val movie = apiClient.getMovieDetails(id).execute()
-
-            if (movie.isSuccessful) {
-
-                emit(movie.body())
-
-            }
-
-        }.flowOn(Dispatchers.IO)
-
-    }
-
-    override fun getMovieCredits(id: String): Flow<Credits?> {
-
-        return flow<Credits?> {
-
-            val credits = apiClient.getMovieCredits(id).execute()
-
-            if (credits.isSuccessful) {
-
-                emit(credits.body())
-
-            }
-
-        }.flowOn(Dispatchers.IO)
-
-    }
-
-    override fun getTvDetails(id: String): Flow<TvDetails?> {
-
-        return flow<TvDetails?> {
-
-            val tvDetails = apiClient.getTvDetails(id).execute()
-
-            if (tvDetails.isSuccessful) {
-
-                emit(tvDetails.body())
-
-            }
-
-        }.flowOn(Dispatchers.IO)
-
-    }
-
-    override fun getTvCredits(id: String): Flow<CreditsTv?> {
-        return flow<CreditsTv?> {
-
-            val credits = apiClient.getTvCredits(id).execute()
-
-            if (credits.isSuccessful) {
-
-                emit(credits.body())
-
-            }
 
         }.flowOn(Dispatchers.IO)
     }
@@ -327,11 +375,11 @@ class RepositoryImpl @Inject constructor(
             val collectionReference = firebaseFirestore.collection("Users")
 
             val documentReference = collectionReference.document(
-             auth.uid!!
+                auth.uid!!
             )
 
             val map: MutableMap<String, Any> = HashMap()
-            map.put("name",name!!)
+            map.put("name", name!!)
 
             documentReference.update(map)
 
@@ -357,8 +405,8 @@ class RepositoryImpl @Inject constructor(
                 )
                 val map: MutableMap<String, Any> =
                     java.util.HashMap()
-                map.put("name",  name!!)
-                map.put("imageUrl",  task.result.toString())
+                map.put("name", name!!)
+                map.put("imageUrl", task.result.toString())
                 documentReference.update(map)
             }.addOnFailureListener {
 
@@ -369,17 +417,23 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-    override fun search(keyword: String, page: String): Flow<Search?> {
+    override fun search(keyword: String, page: String): Flow<NetworkResult<Search?>> {
 
-        return flow<Search?> {
+        return flow<NetworkResult<Search?>> {
 
-            val search = apiClient.search(keyword,page).execute()
+            try {
+                val search = apiClient.search(keyword, page).execute()
 
-            if (search.isSuccessful) {
+                if (search.isSuccessful) {
 
-                emit(search.body())
+                    emit(NetworkResult(Status.SUCCESS, search.body()))
 
+                }
+
+            } catch (e: Exception) {
+                emit(NetworkResult(Status.FAILURE, null))
             }
+
 
         }.flowOn(Dispatchers.IO)
 
