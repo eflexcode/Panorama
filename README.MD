@@ -4,7 +4,7 @@ A movie streaming app
 
 <p float="left">
 
-  <img src="/image/image10.png" width="250" /> 
+  <img src="/image/image10.png" width="250"/> 
   <img src="/image/image8.png" width="250" /> 
   <img src="/image/image2.png" width="250" /> 
   <img src="/image/image3.png" width="250" /> 
@@ -12,6 +12,7 @@ A movie streaming app
   <img src="/image/image5.png" width="250" />
   <img src="/image/image6.png" width="250" />
   <img src="/image/image9.png" width="250" />
+  <img src="/image/image11.png" width="250" />
 
 </p>
 
