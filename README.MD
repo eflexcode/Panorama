@@ -1,5 +1,7 @@
 # Panorama
 
+A movie streaming app
+
 <p float="left">
 
   <img src="/image/image8.png" width="250" /> 
@@ -9,8 +11,6 @@
   <img src="/image/image5.png" width="250" />
   <img src="/image/image6.png" width="250" />
   <img src="/image/image9.png" width="250" />
-
-[//]: # (  <img src="/image/image7.png" width="250" />)
 
 </p>
 
