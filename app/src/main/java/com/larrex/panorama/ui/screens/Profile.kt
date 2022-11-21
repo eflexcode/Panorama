@@ -1,5 +1,6 @@
 package com.larrex.panorama.ui.screens
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
+import com.larrex.panorama.MainActivity
 import com.larrex.panorama.R
 import com.larrex.panorama.Util
 import com.larrex.panorama.ui.theme.ChipBackground
@@ -44,11 +47,7 @@ fun Profile() {
 
     val user by viewModel.getUserDetails().collectAsState(initial = null)
 
-//    val painter = rememberAsyncImagePainter(
-//        model = user?.imageUrl,
-//        placeholder = painterResource(id = R.drawable.gray),
-//        error = painterResource(id = R.drawable.gray)
-//    )
+    val context = LocalContext.current
 
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
@@ -85,16 +84,43 @@ fun Profile() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Text(
-                    text = "My Profile.", modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, top = 35.dp),
-                    textAlign = TextAlign.Start,
-                    fontSize = 25.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = Util.quicksand
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    Text(
+                        text = "My Profile.", modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, top = 35.dp)
+                            .weight(2f),
+                        textAlign = TextAlign.Start,
+                        fontSize = 25.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Util.quicksand
+                    )
+
+                    Text(
+                        text = "Logout", modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 15.dp, top = 35.dp)
+                            .weight(0.5f)
+                            .toggleable(true, true, null, onValueChange = {
+                                viewModel.auth.signOut()
+                                context.startActivity(Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+
+                            }),
+                        textAlign = TextAlign.Start,
+                        fontSize = 15.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Util.quicksand
+                    )
+
+
+                }
+
 
                 Box(
                     modifier = Modifier
@@ -220,7 +246,7 @@ fun Profile() {
 
                             if (imageUri == null) {
 
-                                viewModel.updateProfile(newText.text,null)
+                                viewModel.updateProfile(newText.text, null)
 
                             } else {
                                 viewModel.updateProfile(newText.text, uri = imageUri)

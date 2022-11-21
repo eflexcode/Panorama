@@ -33,7 +33,7 @@ private const val TAG = "MainViewModel"
 class MainViewModel @Inject constructor(
     private var repository: Repository,
     private val savedStateHandle: SavedStateHandle,
-    private val auth: FirebaseAuth,
+    val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
 ) : ViewModel() {
 
@@ -49,7 +49,6 @@ class MainViewModel @Inject constructor(
      var firstPage2 = 1
 
     val tvMovieList = mutableStateListOf<Results>()
-
     val tvMovieWithGenreList = mutableStateListOf<Results>()
     val favouriteMovies = mutableStateListOf<FavouriteMovie>()
     val searchResults = mutableStateListOf<SearchResult>()
