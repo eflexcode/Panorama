@@ -87,8 +87,6 @@ fun AuthScreen(application: Application, navHostController: NavHostController) {
 
             val auth = GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
 
-
-
             CoroutineScope(Dispatchers.IO).launch {
 
                 viewModel.doGoogleAuth(auth).collectLatest { result: Result ->
@@ -106,7 +104,6 @@ fun AuthScreen(application: Application, navHostController: NavHostController) {
     }
 
 //    val result by viewModel.doGoogleAuth(auth).collectAsState(initial = Result(Status.LOADING, ""))
-
 
     Box(
         modifier = Modifier

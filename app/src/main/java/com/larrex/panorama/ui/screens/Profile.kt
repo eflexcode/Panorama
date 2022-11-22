@@ -118,9 +118,7 @@ fun Profile() {
                         fontFamily = Util.quicksand
                     )
 
-
                 }
-
 
                 Box(
                     modifier = Modifier
@@ -187,7 +185,6 @@ fun Profile() {
                             ),
                             enabled = false
 
-
                         )
 
                     }
@@ -239,6 +236,7 @@ fun Profile() {
                     }
 
                 }
+
                 Button(
                     onClick = {
 
@@ -268,7 +266,6 @@ fun Profile() {
 
                 }
             }
-
 
         }
     }
