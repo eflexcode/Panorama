@@ -1,6 +1,6 @@
 # Panorama
 
-A movie streaming app
+A movie streaming app find in on [Google play](https://play.google.com/store/apps/details?id=com.larrex.panorama)
 
 <p float="left">
 
